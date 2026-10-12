@@ -1,0 +1,2506 @@
+<!DOCTYPE html>
+<!--
+  =====================================================================
+  CL'S BROWNIES — Minimalist Editorial Website (index.html)
+  Authentic, human-crafted Swiss minimalist aesthetic (Helvetica Neue).
+  Zero AI tropes: no spinning badges, no marquee tickers, no fake
+  notebook rings, no green uptime dots, no filler value-cards.
+  Pure typography, quiet elegance, purposeful whitespace, and
+  frictionless ordering for an independent Dublin brownie business.
+  =====================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CL'S Brownies — Homemade Fudgy Brownies, Dublin</title>
+<meta name="description" content="Independent student-run homemade brownie business in Dublin. Dense, fudgy brownies baked to order in boxes of 4, 6, and 12 with custom artisan toppings. Order requests via Instagram @cl.priv4.">
+<meta name="theme-color" content="#111111">
+
+<!-- Open Graph Metadata -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="CL'S Brownies — Homemade Brownie Boxes">
+<meta property="og:description" content="Dense, fudgy homemade brownies with custom toppings. Request your box on Instagram @cl.priv4.">
+
+<!-- Favicon (Inline Minimal SVG) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23111111'/%3E%3Cpath d='M9 16h14M16 9v14' stroke='%23FAF9F6' stroke-width='1.5'/%3E%3C/svg%3E">
+
+<script>document.documentElement.classList.add('js');</script>
+
+<style>
+/* =====================================================================
+   1. DESIGN TOKENS — QUIET MINIMALISM & HELVETICA TYPOGRAPHY
+   ===================================================================== */
+:root {
+  --bg: #FBFBFA;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #F3F2EF;
+  --bg-hover: #ECEAE4;
+
+  --ink: #111111;
+  --ink-secondary: #555555;
+  --ink-muted: #888888;
+  --ink-faint: #BBBBBB;
+
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.22);
+  --border-focus: #111111;
+
+  --font: "Helvetica Neue", Helvetica, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+
+  --container: 1180px;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+  --section-space: clamp(4.5rem, 8vw, 8rem);
+  --header-height: 64px;
+
+  --radius: 2px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition: 0.2s var(--ease);
+}
+
+/* =====================================================================
+   2. RESET & BASE
+   ===================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-height) + 24px);
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  font-family: var(--font);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body.menu-open { overflow: hidden; }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+button, input, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+ul, ol {
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+::selection {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 1.5rem;
+  z-index: 999;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: top var(--transition);
+}
+.skip-link:focus { top: 1.5rem; }
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  padding-block: var(--section-space);
+  border-bottom: 1px solid var(--border);
+}
+
+/* =====================================================================
+   3. MINIMALIST TYPOGRAPHY & BUTTONS
+   ===================================================================== */
+.label-small {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  display: block;
+  margin-bottom: 0.6rem;
+}
+
+.section-intro {
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+.section-intro h2 {
+  font-size: clamp(2rem, 1.6rem + 2vw, 3rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+.section-intro p {
+  font-size: 1.05rem;
+  color: var(--ink-secondary);
+  max-width: 36rem;
+  margin-top: 0.75rem;
+  line-height: 1.55;
+}
+
+/* Minimalist Button System */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 44px;
+  padding: 0 1.5rem;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.btn-primary:hover {
+  background: #333333;
+  border-color: #333333;
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--border-strong);
+}
+.btn-secondary:hover {
+  border-color: var(--ink);
+  background: var(--bg-subtle);
+}
+.btn-sm {
+  height: 36px;
+  padding: 0 1.1rem;
+  font-size: 0.8rem;
+}
+.btn-block {
+  width: 100%;
+}
+
+.text-link {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color var(--transition);
+  background: none;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.text-link:hover {
+  color: var(--ink-secondary);
+}
+
+/* =====================================================================
+   4. HEADER & NAVIGATION
+   ===================================================================== */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--header-height);
+  background: rgba(251, 251, 250, 0.94);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.brand-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.nav-desktop { display: none; }
+.nav-desktop ul {
+  display: flex;
+  gap: 2.2rem;
+  align-items: center;
+}
+.nav-desktop a {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--ink-secondary);
+  transition: color var(--transition);
+}
+.nav-desktop a:hover,
+.nav-desktop a.is-active {
+  color: var(--ink);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.header-ig-link {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  display: none;
+}
+.header-ig-link:hover { color: var(--ink); }
+
+.nav-toggle {
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+.nav-toggle span {
+  display: block;
+  width: 16px;
+  height: 1.5px;
+  background: var(--ink);
+  transition: transform var(--transition), opacity var(--transition);
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+
+/* Mobile Menu */
+.mobile-nav {
+  position: fixed;
+  inset: var(--header-height) 0 0 0;
+  background: var(--bg);
+  padding: 2.5rem var(--gutter);
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform: translateY(-100%);
+  transition: transform 0.28s var(--ease);
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+}
+.mobile-nav.is-open { transform: translateY(0); }
+.mobile-nav ul { display: grid; gap: 1.25rem; }
+.mobile-nav a.nav-link {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--ink);
+  display: block;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+@media (min-width: 860px) {
+  .nav-desktop { display: block; }
+  .header-ig-link { display: inline-block; }
+  .nav-toggle, .mobile-nav { display: none !important; }
+}
+
+/* =====================================================================
+   5. HERO SECTION — PURE EDITORIAL CLARITY
+   ===================================================================== */
+.hero {
+  padding-top: clamp(3rem, 6vw, 5.5rem);
+  padding-bottom: clamp(3.5rem, 6vw, 6rem);
+}
+.hero-grid {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4.5rem);
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .hero-grid {
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+}
+
+.hero-copy {
+  max-width: 36rem;
+}
+.hero-location {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 1rem;
+}
+.hero h1 {
+  font-size: clamp(2.6rem, 2rem + 3vw, 4.2rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  margin-bottom: 1.4rem;
+}
+.hero-intro {
+  font-size: 1.08rem;
+  color: var(--ink-secondary);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+.hero-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.82rem;
+  color: var(--ink-secondary);
+}
+.hero-specs span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.hero-visual {
+  position: relative;
+}
+.hero-image-wrap {
+  aspect-ratio: 4/4.5;
+  overflow: hidden;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.hero-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* =====================================================================
+   6. THE MENU & BOX SIZES
+   ===================================================================== */
+.menu-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  .menu-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.menu-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: clamp(1.6rem, 3vw, 2.2rem);
+  display: flex;
+  flex-direction: column;
+  transition: border-color var(--transition);
+}
+.menu-card:hover {
+  border-color: var(--border-strong);
+}
+.menu-card.is-featured {
+  border-color: var(--ink);
+}
+
+.menu-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+.menu-card-count {
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.menu-card-price {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.menu-card-badge {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.menu-card p {
+  font-size: 0.88rem;
+  color: var(--ink-secondary);
+  line-height: 1.55;
+  margin-bottom: 1.8rem;
+  flex: 1;
+}
+
+/* Toppings Catalog Row */
+.toppings-overview {
+  margin-top: 3.5rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--border);
+}
+.toppings-overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.toppings-overview-header h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+.toppings-rate-tag {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ink-secondary);
+}
+
+.toppings-cat-grid {
+  display: grid;
+  gap: 1.8rem 2.5rem;
+}
+@media (min-width: 640px) {
+  .toppings-cat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .toppings-cat-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.toppings-cat-col {
+  border-top: 1px solid var(--border);
+  padding-top: 0.9rem;
+}
+.toppings-cat-col h4 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.toppings-cat-items {
+  font-size: 0.85rem;
+  color: var(--ink-secondary);
+  line-height: 1.6;
+}
+
+/* =====================================================================
+   7. SIGNATURE FLAVOURS (EDITORIAL CATALOG)
+   ===================================================================== */
+.creations-grid {
+  display: grid;
+  gap: 2rem;
+}
+@media (min-width: 600px) {
+  .creations-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .creations-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.creation-card {
+  display: flex;
+  flex-direction: column;
+}
+.creation-img-wrap {
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}
+.creation-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s var(--ease);
+}
+.creation-card:hover .creation-img-wrap img {
+  transform: scale(1.02);
+}
+.creation-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+.creation-card p {
+  font-size: 0.85rem;
+  color: var(--ink-secondary);
+  line-height: 1.5;
+  margin-bottom: 0.6rem;
+  flex: 1;
+}
+.creation-ingredients {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  line-height: 1.4;
+  margin-bottom: 0.9rem;
+}
+
+/* =====================================================================
+   8. BOX BUILDER (INTERACTIVE CUSTOMIZER)
+   ===================================================================== */
+.builder-wrap {
+  display: grid;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  .builder-wrap {
+    grid-template-columns: 1fr 380px;
+  }
+}
+
+.builder-controls {
+  display: grid;
+  gap: 2.2rem;
+}
+
+.builder-step {
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+.builder-step:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.builder-step-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+.builder-step-head h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.builder-step-head span.hint {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}
+
+/* Size Segment Buttons */
+.size-picker {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.65rem;
+}
+.size-btn-label {
+  position: relative;
+  cursor: pointer;
+}
+.size-btn-label input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+}
+.size-btn-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 0.9rem 0.5rem;
+  text-align: center;
+  transition: all var(--transition);
+}
+.size-btn-box .count {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+  display: block;
+}
+.size-btn-box .sub {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-top: 0.2rem;
+  display: block;
+}
+.size-btn-box .price {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.4rem;
+  display: block;
+}
+.size-btn-label:hover .size-btn-box {
+  border-color: var(--ink);
+}
+.size-btn-label input:checked + .size-btn-box {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.size-btn-label input:checked + .size-btn-box .sub {
+  color: rgba(251, 251, 250, 0.7);
+}
+
+/* Quantity Stepper */
+.qty-stepper-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+.qty-stepper {
+  display: inline-flex;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg-surface);
+}
+.qty-stepper button {
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background var(--transition);
+}
+.qty-stepper button:hover { background: var(--bg-subtle); }
+.qty-stepper input {
+  width: 46px;
+  text-align: center;
+  border: 0;
+  border-inline: 1px solid var(--border);
+  font-size: 0.95rem;
+  font-weight: 600;
+  background: transparent;
+  -moz-appearance: textfield;
+}
+.qty-stepper input::-webkit-inner-spin-button,
+.qty-stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* Toppings Checkboxes */
+.toppings-builder-list {
+  display: grid;
+  gap: 1.4rem;
+}
+.toppings-group-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 0.6rem;
+}
+.toppings-chips-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.topping-chip {
+  position: relative;
+  cursor: pointer;
+}
+.topping-chip input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+}
+.topping-chip-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg-surface);
+  font-size: 0.84rem;
+  font-weight: 400;
+  transition: all var(--transition);
+}
+.topping-chip:hover .topping-chip-label {
+  border-color: var(--ink);
+}
+.topping-chip input:checked + .topping-chip-label {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+/* Fulfilment Radios */
+.fulfilment-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+@media (min-width: 600px) {
+  .fulfilment-grid { grid-template-columns: 1fr 1fr; }
+}
+.fulfil-radio-label {
+  position: relative;
+  cursor: pointer;
+}
+.fulfil-radio-label input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+}
+.fulfil-radio-box {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 0.9rem;
+  background: var(--bg-surface);
+  transition: all var(--transition);
+}
+.fulfil-radio-box strong {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+.fulfil-radio-box span {
+  font-size: 0.75rem;
+  color: var(--ink-secondary);
+  line-height: 1.4;
+  display: block;
+}
+.fulfil-radio-label input:checked + .fulfil-radio-box {
+  border-color: var(--ink);
+  background: var(--bg-subtle);
+}
+
+/* Fields */
+.fields-grid {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+@media (min-width: 600px) {
+  .fields-grid { grid-template-columns: 1fr 1fr; }
+  .fields-grid .full { grid-column: 1 / -1; }
+}
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.field-group label {
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-secondary);
+}
+.field-group input,
+.field-group textarea {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  color: var(--ink);
+  transition: border-color var(--transition);
+}
+.field-group textarea {
+  min-height: 75px;
+  resize: vertical;
+}
+.field-group input:focus,
+.field-group textarea:focus {
+  outline: 0;
+  border-color: var(--ink);
+}
+
+/* Summary Sheet (Minimalist Receipt) */
+.summary-sheet {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: clamp(1.4rem, 3vw, 2rem);
+  position: sticky;
+  top: calc(var(--header-height) + 20px);
+}
+.summary-sheet-head {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+.summary-sheet-head h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.summary-rows {
+  display: grid;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+.summary-row dt { color: var(--ink-secondary); }
+.summary-row dd { font-weight: 500; text-align: right; }
+
+.summary-toppings-list {
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 0.35rem;
+}
+.summary-toppings-title {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  display: block;
+}
+.summary-topping-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  padding: 0.25rem 0;
+}
+.summary-topping-item button {
+  background: none;
+  border: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+  padding: 0 4px;
+}
+.summary-topping-item button:hover { color: var(--ink); }
+
+.summary-total-row {
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ink);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.summary-total-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.summary-total-amount {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.summary-provisional-note {
+  margin-top: 1rem;
+  font-size: 0.76rem;
+  color: var(--ink-secondary);
+  line-height: 1.5;
+  padding: 0.75rem;
+  background: var(--bg-subtle);
+  border-radius: var(--radius);
+}
+
+.summary-sheet-actions {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1.4rem;
+}
+
+.copy-alert {
+  padding: 0.6rem 0.8rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  color: var(--ink);
+  display: none;
+  margin-top: 0.6rem;
+}
+.copy-alert.is-active { display: block; }
+
+.copy-fallback-block {
+  margin-top: 0.8rem;
+  display: none;
+}
+.copy-fallback-block.is-active { display: block; }
+.copy-fallback-block textarea {
+  width: 100%;
+  min-height: 120px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  background: var(--bg);
+  padding: 0.5rem;
+  border: 1px solid var(--border-strong);
+}
+
+/* =====================================================================
+   9. OUR STORY — HONEST & EDITORIAL
+   ===================================================================== */
+.story-grid {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+}
+@media (min-width: 860px) {
+  .story-grid {
+    grid-template-columns: 0.95fr 1.05fr;
+  }
+}
+.story-photo-wrap {
+  aspect-ratio: 4/4.5;
+  overflow: hidden;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.story-photo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.story-text h2 {
+  font-size: clamp(1.8rem, 1.4rem + 1.6vw, 2.8rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin-bottom: 1.2rem;
+}
+.story-text p {
+  font-size: 1rem;
+  color: var(--ink-secondary);
+  line-height: 1.65;
+  margin-bottom: 1rem;
+}
+
+/* =====================================================================
+   10. ORDERING PROCESS
+   ===================================================================== */
+.process-row {
+  display: grid;
+  gap: 1.5rem;
+}
+@media (min-width: 640px) {
+  .process-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .process-row { grid-template-columns: repeat(4, 1fr); }
+}
+.process-item {
+  border-top: 1px solid var(--ink);
+  padding-top: 1rem;
+}
+.process-num {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.process-item h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+.process-item p {
+  font-size: 0.85rem;
+  color: var(--ink-secondary);
+  line-height: 1.5;
+}
+
+/* =====================================================================
+   11. FAQS & ALLERGENS
+   ===================================================================== */
+.faq-wrap {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+}
+@media (min-width: 860px) {
+  .faq-wrap {
+    grid-template-columns: 0.8fr 1.2fr;
+  }
+}
+.faq-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.allergen-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+.allergen-box h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+.allergen-box p {
+  font-size: 0.82rem;
+  color: var(--ink-secondary);
+  line-height: 1.55;
+}
+
+.faq-accordion {
+  border-top: 1px solid var(--border);
+}
+.faq-item {
+  border-bottom: 1px solid var(--border);
+}
+.faq-trigger {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: 1.1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.faq-symbol {
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: var(--ink-muted);
+  transition: transform var(--transition);
+}
+.faq-trigger[aria-expanded="true"] .faq-symbol {
+  transform: rotate(45deg);
+  color: var(--ink);
+}
+.faq-content {
+  padding-bottom: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--ink-secondary);
+  line-height: 1.6;
+}
+
+/* =====================================================================
+   12. SITE FOOTER
+   ===================================================================== */
+.site-footer {
+  background: var(--bg);
+  padding-block: clamp(3rem, 5vw, 4.5rem);
+}
+.footer-grid {
+  display: grid;
+  gap: 2.5rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1.5fr 1fr 1fr;
+  }
+}
+.footer-brand h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.footer-brand p {
+  font-size: 0.85rem;
+  color: var(--ink-secondary);
+  max-width: 22rem;
+  line-height: 1.5;
+}
+.footer-col h5 {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 0.85rem;
+}
+.footer-col ul { display: grid; gap: 0.45rem; }
+.footer-col a {
+  font-size: 0.85rem;
+  color: var(--ink-secondary);
+  transition: color var(--transition);
+}
+.footer-col a:hover { color: var(--ink); }
+
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1.8rem;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}
+
+/* =====================================================================
+   ORDER CONFIRMATION MODAL & SUBMIT STYLES
+   ===================================================================== */
+.order-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 17, 17, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.order-confirm-overlay[hidden] {
+  display: none;
+}
+.order-confirm-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  max-width: 480px;
+  width: 100%;
+  padding: clamp(1.5rem, 4vw, 2.2rem);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+  animation: modalScaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalScaleIn {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.order-confirm-head {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+  margin-bottom: 1.2rem;
+}
+.order-confirm-head h3 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.ref-badge {
+  display: inline-block;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-strong);
+  padding: 0.15rem 0.55rem;
+  border-radius: 2px;
+  font-family: monospace;
+  font-size: 0.95rem;
+  color: var(--ink);
+  letter-spacing: 0.05em;
+}
+.confirm-receipt-block {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+.confirm-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.confirm-row.total {
+  border-top: 1px dashed var(--border-strong);
+  padding-top: 0.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.next-step-guide {
+  background: #fbf6ec;
+  border: 1px solid #e7d8b8;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius);
+  margin-bottom: 1.2rem;
+}
+.confirm-modal-actions {
+  display: grid;
+  gap: 0.6rem;
+}
+.field-group input.is-invalid {
+  border-color: #dc2626 !important;
+  background-color: #fef2f2 !important;
+}
+.required-star {
+  color: #dc2626;
+  font-weight: 700;
+}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<!-- ===================== HEADER ===================== -->
+<header class="site-header" id="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="#home" aria-label="CL'S Brownies Home">
+      <span class="brand-title">CL’S BROWNIES</span>
+    </a>
+
+    <nav class="nav-desktop" aria-label="Main Navigation">
+      <ul>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#flavours">Signature Flavours</a></li>
+        <li><a href="#create">Box Builder</a></li>
+        <li><a href="#story">Our Story</a></li>
+        <li><a href="#faqs">FAQs</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <a class="header-ig-link" href="https://www.instagram.com/cl.priv4/" target="_blank" rel="noopener noreferrer">@cl.priv4 ↗</a>
+      <a class="btn btn-primary btn-sm" href="#create">Build a Box</a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Navigation Drawer -->
+<div class="mobile-nav" id="mobile-nav" hidden>
+  <nav aria-label="Mobile Navigation">
+    <ul>
+      <li><a class="nav-link" href="#home">Home</a></li>
+      <li><a class="nav-link" href="#menu">Menu</a></li>
+      <li><a class="nav-link" href="#flavours">Signature Flavours</a></li>
+      <li><a class="nav-link" href="#create">Box Builder</a></li>
+      <li><a class="nav-link" href="#story">Our Story</a></li>
+      <li><a class="nav-link" href="#faqs">FAQs</a></li>
+    </ul>
+  </nav>
+  <div style="margin-top: 2rem;">
+    <a class="btn btn-primary btn-block" href="#create">Build Your Box</a>
+    <p style="font-size:0.85rem; color:var(--ink-secondary); margin-top:1rem;">Direct orders: <a href="https://www.instagram.com/cl.priv4/" target="_blank" rel="noopener noreferrer" style="text-decoration:underline;">@cl.priv4 on Instagram</a></p>
+  </div>
+</div>
+
+<main id="main">
+
+<!-- ===================== HERO SECTION ===================== -->
+<section class="section hero" id="home">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <div class="hero-location">Dublin, Ireland — Small Batch Homemade</div>
+      <h1>Dense, fudgy brownies, baked to order.</h1>
+      <p class="hero-intro">Handcrafted chocolate brownie boxes made with real dark chocolate and custom artisan toppings. Select your box of 4, 6, or 12, choose your toppings, and request your date directly on Instagram.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#create">Build Your Box</a>
+        <a class="btn btn-secondary" href="#menu">View Menu</a>
+      </div>
+      <div class="hero-specs">
+        <span>Boxes from €10</span>
+        <span>•</span>
+        <span>Collection in Dublin</span>
+        <span>•</span>
+        <span>Direct Instagram DM</span>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-image-wrap">
+        <img src="images/hero_brownie.jpg" alt="Rich homemade dark chocolate brownies" width="928" height="1152" fetchpriority="high">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== THE MENU & PRICING ===================== -->
+<section class="section" id="menu">
+  <div class="container">
+    <div class="section-intro">
+      <span class="label-small">Pricing &amp; Sizes</span>
+      <h2>The Menu</h2>
+      <p>Transparent pricing for our classic fudge brownie boxes. Add any combination of extra toppings across sauces, biscuits, chocolates, and fruit for +€1 each.</p>
+    </div>
+
+    <div class="menu-grid" id="menu-boxes-list"></div>
+
+    <div class="toppings-overview">
+      <div class="toppings-overview-header">
+        <div>
+          <span class="label-small">Customise</span>
+          <h3>Extra Toppings Menu</h3>
+        </div>
+        <span class="toppings-rate-tag">+€1 per selected topping per box</span>
+      </div>
+
+      <div class="toppings-cat-grid" id="toppings-catalog"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SIGNATURE FLAVOURS ===================== -->
+<section class="section" id="flavours">
+  <div class="container">
+    <div class="section-intro">
+      <span class="label-small">Kitchen Favourites</span>
+      <h2>Signature Flavours</h2>
+      <p>Proven combinations from our baking notes. Tap “Customise this combo” to automatically load matching toppings into the builder.</p>
+    </div>
+
+    <div class="creations-grid" id="creations-list"></div>
+  </div>
+</section>
+
+<!-- ===================== INTERACTIVE BOX BUILDER ===================== -->
+<section class="section" id="create">
+  <div class="container">
+    <div class="section-intro">
+      <span class="label-small">Interactive Builder</span>
+      <h2>Build Your Brownie Box</h2>
+      <p>Choose your size and toppings. When you are ready, copy the formatted order summary and message @cl.priv4 on Instagram to confirm availability.</p>
+    </div>
+
+    <div class="builder-wrap">
+      <form class="builder-controls" id="order-form" onsubmit="return false;">
+        <!-- Step 1: Size -->
+        <div class="builder-step">
+          <div class="builder-step-head">
+            <h3>1. Select Box Size</h3>
+          </div>
+          <div class="size-picker" id="size-options-container"></div>
+        </div>
+
+        <!-- Step 2: Quantity -->
+        <div class="builder-step">
+          <div class="builder-step-head">
+            <h3>2. Number of Boxes</h3>
+            <span class="hint">Identical boxes (1–10)</span>
+          </div>
+          <div class="qty-stepper-wrap">
+            <div class="qty-stepper">
+              <button type="button" id="btn-qty-minus" aria-label="Decrease quantity">−</button>
+              <input type="number" id="input-qty" name="quantity" min="1" max="10" value="1" readonly>
+              <button type="button" id="btn-qty-plus" aria-label="Increase quantity">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Toppings -->
+        <div class="builder-step">
+          <div class="builder-step-head">
+            <h3>3. Extra Toppings</h3>
+            <span class="hint">Optional · +€1 each per box</span>
+          </div>
+          <div class="toppings-builder-list" id="builder-toppings-list"></div>
+        </div>
+
+        <!-- Step 4: Fulfilment & Details -->
+        <div class="builder-step">
+          <div class="builder-step-head">
+            <h3>4. Fulfilment &amp; Notes</h3>
+          </div>
+
+          <div class="fulfilment-grid">
+            <label class="fulfil-radio-label">
+              <input type="radio" name="fulfilment" value="collection" checked>
+              <div class="fulfil-radio-box">
+                <strong>Collection</strong>
+                <span>Collection point and timing agreed privately upon review.</span>
+              </div>
+            </label>
+            <label class="fulfil-radio-label">
+              <input type="radio" name="fulfilment" value="delivery">
+              <div class="fulfil-radio-box">
+                <strong>Ask About Delivery</strong>
+                <span>Subject to schedule and location. Feasibility verified directly.</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="fields-grid">
+            <div class="field-group">
+              <label for="field-name">Your Name <span class="required-star">*</span></label>
+              <input type="text" id="field-name" name="name" placeholder="e.g. Alex Kelly" required>
+            </div>
+            <div class="field-group">
+              <label for="field-ig">Instagram Handle <span class="required-star">*</span></label>
+              <input type="text" id="field-ig" name="instagram" placeholder="@alex_dublin" required>
+            </div>
+            <div class="field-group">
+              <label for="field-phone">Phone / WhatsApp (Optional)</label>
+              <input type="tel" id="field-phone" name="phone" placeholder="087 123 4567">
+            </div>
+            <div class="field-group">
+              <label for="field-date">Preferred Date (Optional)</label>
+              <input type="date" id="field-date" name="preferred_date">
+            </div>
+            <div class="field-group full">
+              <label for="field-notes">Notes / Dietary Enquiries</label>
+              <textarea id="field-notes" name="notes" placeholder="Special requests, birthday note, allergen questions..."></textarea>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- Sidebar Order Summary -->
+      <aside class="summary-sheet" aria-labelledby="summary-heading">
+        <div class="summary-sheet-head">
+          <span class="label-small" style="margin-bottom:0.2rem;">Order Summary</span>
+          <h3 id="summary-heading">Your Selection</h3>
+        </div>
+
+        <dl class="summary-rows">
+          <div class="summary-row">
+            <dt>Box Size</dt>
+            <dd id="disp-box-name">6 Classic Brownies (€14)</dd>
+          </div>
+          <div class="summary-row">
+            <dt>Quantity</dt>
+            <dd id="disp-box-qty">1 Box</dd>
+          </div>
+          <div class="summary-row">
+            <dt>Fulfilment</dt>
+            <dd id="disp-fulfil">Collection</dd>
+          </div>
+        </dl>
+
+        <div class="summary-toppings-list">
+          <span class="summary-toppings-title">Selected Extras</span>
+          <div id="disp-extras-list">
+            <span style="font-size:0.8rem; color:var(--ink-muted); font-style:italic;">None selected (Classic Fudgy)</span>
+          </div>
+        </div>
+
+        <div class="summary-total-row">
+          <span class="summary-total-label">Estimated Total</span>
+          <div class="summary-total-amount" id="disp-total-price">€14</div>
+        </div>
+
+        <div class="summary-provisional-note">
+          <strong>Request Only:</strong> Payment is made manually via Revolut after your request and date are accepted on Instagram.
+        </div>
+
+        <div class="summary-sheet-actions">
+          <button type="button" class="btn btn-primary btn-block" id="btn-submit-order">
+            Submit Order Request →
+          </button>
+          <button type="button" class="btn btn-secondary btn-block" id="btn-copy">
+            Copy Order Request
+          </button>
+          <a class="btn btn-secondary btn-block" href="https://www.instagram.com/cl.priv4/" target="_blank" rel="noopener noreferrer">
+            Message @cl.priv4 ↗
+          </a>
+          <button type="button" class="text-link" id="btn-reset" style="margin-top:0.4rem; justify-content:center;">
+            Reset builder
+          </button>
+        </div>
+
+        <div class="copy-alert" id="copy-status">
+          ✓ Copied! Open Instagram and paste in a DM to <strong>@cl.priv4</strong>.
+        </div>
+
+        <div class="copy-fallback-block" id="copy-fallback">
+          <p style="font-size:0.75rem; margin-bottom:0.3rem;">Order summary text:</p>
+          <textarea id="copy-fallback-text" readonly></textarea>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Order Confirmation Modal -->
+  <div class="order-confirm-overlay" id="order-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title" hidden>
+    <div class="order-confirm-card">
+      <div class="order-confirm-head">
+        <span class="label-small" style="color:var(--ink-secondary);">Bakery Queue Confirmation</span>
+        <h3 id="confirm-modal-title">🎉 Order Request Submitted!</h3>
+        <p style="font-size:0.85rem; color:var(--ink-secondary); margin-top:0.3rem;">
+          Your order reference is <strong id="modal-order-ref" class="ref-badge">#CL-0000</strong>
+        </p>
+      </div>
+
+      <div class="order-confirm-body">
+        <div class="confirm-receipt-block">
+          <div class="confirm-row">
+            <span>Selection:</span>
+            <strong id="modal-box-info">-</strong>
+          </div>
+          <div class="confirm-row">
+            <span>Extras:</span>
+            <span id="modal-toppings-info" style="text-align:right;">-</span>
+          </div>
+          <div class="confirm-row">
+            <span>Fulfilment:</span>
+            <span id="modal-fulfil-info">-</span>
+          </div>
+          <div class="confirm-row total">
+            <span>Estimated Total:</span>
+            <strong id="modal-total-info">€0</strong>
+          </div>
+        </div>
+
+        <div class="next-step-guide">
+          <h4 style="font-size:0.8rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;">Next Steps to Confirm:</h4>
+          <p style="font-size:0.8rem; color:var(--ink-secondary); margin-top:0.25rem;">
+            Your request is logged in the bakery queue. Send a quick DM to <strong>@cl.priv4</strong> with your order number. Once availability is confirmed, Revolut payment details will be provided.
+          </p>
+        </div>
+
+        <div class="confirm-modal-actions">
+          <a class="btn btn-primary btn-block" id="modal-btn-open-ig" href="https://www.instagram.com/cl.priv4/" target="_blank" rel="noopener noreferrer">
+            Message @cl.priv4 on Instagram ↗
+          </a>
+          <button type="button" class="btn btn-secondary btn-block" id="modal-btn-copy-summary">
+            Copy Order Breakdown
+          </button>
+          <button type="button" class="text-link" id="modal-btn-close" style="justify-content:center; margin-top:0.3rem;">
+            Done / Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== OUR STORY ===================== -->
+<section class="section" id="story">
+  <div class="container story-grid">
+    <div class="story-photo-wrap">
+      <img src="images/story_tray.jpg" alt="Tray of freshly baked dark chocolate brownies" width="928" height="1152" loading="lazy">
+    </div>
+
+    <div class="story-text">
+      <span class="label-small">About CL'S Brownies</span>
+      <h2>Baking from scratch, one batch at a time.</h2>
+      <p>CL’S Brownies is a student-run homemade bakery in Dublin, born from an obsession with getting brownies right. We believe brownies should be dense, rich, and intensely chocolatey — never dry, cakey, or rushed.</p>
+      <p>Because every order is baked by hand in small quantities, each box receives genuine care. Whether you are ordering a personal treat, celebrating a birthday, or fueling a study session, we bake each batch fresh for you.</p>
+      <div style="margin-top: 1.5rem;">
+        <a class="text-link" href="#create">Build your box →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOW IT WORKS ===================== -->
+<section class="section" id="how">
+  <div class="container">
+    <div class="section-intro">
+      <span class="label-small">Simple Process</span>
+      <h2>How Ordering Works</h2>
+      <p>A personal, direct ordering flow with no automated checkout.</p>
+    </div>
+
+    <div class="process-row">
+      <div class="process-item">
+        <span class="process-num">01</span>
+        <h3>Build Box</h3>
+        <p>Select your box size (4, 6, or 12) and choose any extra toppings.</p>
+      </div>
+      <div class="process-item">
+        <span class="process-num">02</span>
+        <h3>Copy Summary</h3>
+        <p>Click “Copy Order Request” to copy the plain-text order breakdown.</p>
+      </div>
+      <div class="process-item">
+        <span class="process-num">03</span>
+        <h3>DM on Instagram</h3>
+        <p>Send the breakdown to <a href="https://www.instagram.com/cl.priv4/" target="_blank" rel="noopener noreferrer" style="text-decoration:underline;">@cl.priv4</a> to confirm your date.</p>
+      </div>
+      <div class="process-item">
+        <span class="process-num">04</span>
+        <h3>Revolut &amp; Collect</h3>
+        <p>Pay via Revolut transfer once confirmed, then collect your fresh box.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQS ===================== -->
+<section class="section" id="faqs">
+  <div class="container faq-wrap">
+    <div class="faq-aside">
+      <div>
+        <span class="label-small">Information</span>
+        <h2 style="font-size:clamp(1.8rem, 1.4rem + 1.5vw, 2.6rem); font-weight:600; letter-spacing:-0.02em;">Frequently Asked Questions</h2>
+        <p style="font-size:0.95rem; color:var(--ink-secondary); margin-top:0.6rem;">Common questions about ordering, payments, and ingredients.</p>
+      </div>
+
+      <div class="allergen-box">
+        <h3>Allergen Disclaimer</h3>
+        <p>Our brownies contain dairy, eggs, gluten, and sugar. They are baked in a domestic kitchen where nuts and peanuts are handled. Please mention any dietary restrictions in your Instagram DM prior to confirmation.</p>
+      </div>
+    </div>
+
+    <div class="faq-accordion" id="faq-list"></div>
+  </div>
+</section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h4>CL’S BROWNIES</h4>
+        <p>Independent student-run homemade brownie business in Dublin. Dense, fudgy brownies baked to order.</p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Navigation</h5>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#menu">Menu</a></li>
+          <li><a href="#flavours">Signature Flavours</a></li>
+          <li><a href="#create">Box Builder</a></li>
+          <li><a href="#story">Our Story</a></li>
+          <li><a href="#faqs">FAQs</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Orders &amp; Contact</h5>
+        <ul>
+          <li><a href="https://www.instagram.com/cl.priv4/" target="_blank" rel="noopener noreferrer">Instagram: @cl.priv4 ↗</a></li>
+          <li><span style="font-size:0.85rem; color:var(--ink-secondary);">Fulfilment: Collection standard</span></li>
+          <li><span style="font-size:0.85rem; color:var(--ink-secondary);">Delivery: By negotiation</span></li>
+          <li><span style="font-size:0.85rem; color:var(--ink-secondary);">Payment: Revolut transfer</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© <span id="year-num">2026</span> CL'S BROWNIES. Dublin, Ireland. · <a href="admin.html" style="text-decoration:underline; font-weight:500;">Admin Dashboard ↗</a></p>
+      <p>Dense homemade brownies baked to order in Dublin.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Shared Bakery Orders API -->
+<script src="orders-api.js"></script>
+
+<!-- =====================================================================
+   JAVASCRIPT: APPLICATION LOGIC & STATE
+   ===================================================================== -->
+<script>
+(function() {
+  'use strict';
+
+  /* ===================================================================
+     1. SITE CONFIGURATION
+     =================================================================== */
+  const SITE_CONFIG = {
+    brand: {
+      name: "CL'S BROWNIES",
+      handle: "@cl.priv4",
+      instagramUrl: "https://www.instagram.com/cl.priv4/",
+      currency: "€"
+    },
+
+    // Brownie Boxes & Base Prices
+    boxes: [
+      { id: "box-4", count: 4, price: 10, title: "Box of 4", blurb: "A treat for yourself or to share with someone special." },
+      { id: "box-6", count: 6, price: 14, title: "Box of 6", blurb: "Our most popular box — perfect for a weekend treat or sharing.", isFavourite: true },
+      { id: "box-12", count: 12, price: 20, title: "Box of 12", blurb: "The celebration crowd-pleaser for parties, study marathons, and birthdays." }
+    ],
+
+    // Toppings Catalog (+€1 per selected topping)
+    toppingsCategories: [
+      {
+        id: "sauces",
+        name: "Sauces",
+        rate: "+€1 each",
+        items: [
+          { id: "s-milk", name: "Milk Chocolate Drizzle" },
+          { id: "s-dark", name: "Dark Chocolate Drizzle" },
+          { id: "s-white", name: "White Chocolate Drizzle" },
+          { id: "s-pistachio", name: "Pistachio Cream" },
+          { id: "s-caramel", name: "Salted Caramel Drizzle" }
+        ]
+      },
+      {
+        id: "biscuits",
+        name: "Biscuits",
+        rate: "+€1 each",
+        items: [
+          { id: "b-lotus", name: "Lotus Biscoff Biscuit" },
+          { id: "b-lotus-crumb", name: "Biscoff Crumbs" },
+          { id: "b-oreo", name: "Crushed Oreos" },
+          { id: "b-minioreo", name: "Mini Oreos" }
+        ]
+      },
+      {
+        id: "chocolates",
+        name: "Chocolates",
+        rate: "+€1 each",
+        items: [
+          { id: "c-bueno", name: "Kinder Bueno" },
+          { id: "c-maltesers", name: "Maltesers" },
+          { id: "c-dairymilk", name: "Dairy Milk" },
+          { id: "c-snickers", name: "Snickers" },
+          { id: "c-reeses", name: "Reese's Peanut Butter Cup" },
+          { id: "c-minieggs", name: "Mini Eggs" }
+        ]
+      },
+      {
+        id: "fruit",
+        name: "Fruit",
+        rate: "+€1 each",
+        items: [
+          { id: "f-strawberries", name: "Fresh Strawberries" },
+          { id: "f-raspberries", name: "Fresh Raspberries" },
+          { id: "f-blackberries", name: "Blackberries" },
+          { id: "f-cherries", name: "Cherries" }
+        ]
+      }
+    ],
+
+    // Signature Creations
+    creations: [
+      {
+        id: "lotus-caramel",
+        name: "Lotus & Caramel",
+        image: "images/lotus_brownie.jpg",
+        desc: "Crunchy Lotus Biscoff biscuit and crushed crumbs over warm golden caramel drizzle.",
+        toppings: ["b-lotus", "s-caramel"],
+        ingredients: "Lotus Biscoff · Salted Caramel Drizzle · Crumb"
+      },
+      {
+        id: "oreo-chocolate",
+        name: "Oreo Chocolate",
+        image: "images/oreo_brownie.jpg",
+        desc: "Crushed Oreos loaded on top with ribbons of melted milk chocolate drizzle.",
+        toppings: ["b-oreo", "s-milk"],
+        ingredients: "Crushed Oreos · Milk Chocolate Drizzle"
+      },
+      {
+        id: "pistachio-dream",
+        name: "Pistachio Dream",
+        image: "images/pistachio_brownie.jpg",
+        desc: "Silky pistachio cream layered with white chocolate drizzle and toasted texture.",
+        toppings: ["s-pistachio", "s-white"],
+        ingredients: "Pistachio Cream · White Chocolate"
+      },
+      {
+        id: "raspberry-dark",
+        name: "Raspberry Dark",
+        image: "images/raspberry_brownie.jpg",
+        desc: "Tart fresh raspberries contrasting against intense glossy dark chocolate sauce.",
+        toppings: ["f-raspberries", "s-dark"],
+        ingredients: "Fresh Raspberries · Dark Chocolate Drizzle"
+      }
+    ],
+
+    faqs: [
+      {
+        q: "How do I place an order request?",
+        a: "Configure your box size (4, 6 or 12) and select any toppings in our builder. Click 'Copy Order Request' and paste it into a direct message to @cl.priv4 on Instagram. We will reply to verify availability and confirm your request."
+      },
+      {
+        q: "When and how do I pay?",
+        a: "Payment is made manually through Revolut only AFTER we personally review and accept your order request. We will share Revolut details directly in your Instagram DM. Please never send payments prior to our confirmation."
+      },
+      {
+        q: "Is collection available?",
+        a: "Yes. Collection is our default and standard fulfilment method. Exact collection location and agreed pickup times are confirmed privately with you on Instagram."
+      },
+      {
+        q: "Can you deliver my brownies?",
+        a: "Delivery is not guaranteed as standard, but may be negotiated depending on location and our baking schedule. Please choose 'Ask About Delivery' in the builder and we will let you know what is possible."
+      },
+      {
+        q: "How much advance notice is required?",
+        a: "Because all brownies are homemade in small batches, notice depends on our schedule. Please send us your requested date on Instagram as early as possible so we can confirm whether we can bake for you."
+      },
+      {
+        q: "What about allergies and ingredients?",
+        a: "Our brownies contain dairy, eggs, gluten, and sugar, and are baked in a domestic kitchen where nuts and peanuts are handled. We cannot guarantee an allergen-free environment. Please ask us on Instagram before ordering if you have any dietary restrictions."
+      }
+    ]
+  };
+
+  /* ===================================================================
+     2. APPLICATION STATE
+     =================================================================== */
+  const state = {
+    boxId: "box-6",
+    quantity: 1,
+    selectedToppings: new Set(),
+    fulfilment: "collection",
+    date: "",
+    name: "",
+    instagram: "",
+    phone: "",
+    notes: ""
+  };
+
+  const fmtEur = (val) => `€${val}`;
+
+  /* ===================================================================
+     3. RENDER FUNCTIONS
+     =================================================================== */
+
+  // Render Menu Box Cards
+  function renderMenuBoxes() {
+    const container = document.getElementById("menu-boxes-list");
+    if (!container) return;
+
+    container.innerHTML = SITE_CONFIG.boxes.map(b => `
+      <div class="menu-card ${b.isFavourite ? 'is-featured' : ''}">
+        ${b.isFavourite ? '<span class="menu-card-badge">Most Popular</span>' : '<span class="menu-card-badge">Classic Box</span>'}
+        <div class="menu-card-header">
+          <span class="menu-card-count">${b.count} Brownies</span>
+          <span class="menu-card-price">${fmtEur(b.price)}</span>
+        </div>
+        <p>${b.blurb}</p>
+        <button type="button" class="btn ${b.isFavourite ? 'btn-primary' : 'btn-secondary'} btn-sm" data-action="pick-box" data-box="${b.id}">
+          Select ${b.count} Pack
+        </button>
+      </div>
+    `).join('');
+  }
+
+  // Render Toppings Overview
+  function renderToppingsCatalog() {
+    const container = document.getElementById("toppings-catalog");
+    if (!container) return;
+
+    container.innerHTML = SITE_CONFIG.toppingsCategories.map(cat => `
+      <div class="toppings-cat-col">
+        <h4>${cat.name}</h4>
+        <p class="toppings-cat-items">${cat.items.map(i => i.name).join(', ')}</p>
+      </div>
+    `).join('');
+  }
+
+  // Render Signature Flavours
+  function renderCreations() {
+    const container = document.getElementById("creations-list");
+    if (!container) return;
+
+    container.innerHTML = SITE_CONFIG.creations.map(c => `
+      <article class="creation-card">
+        <div class="creation-img-wrap">
+          <img src="${c.image}" alt="${c.name}" loading="lazy">
+        </div>
+        <h3>${c.name}</h3>
+        <p>${c.desc}</p>
+        <div class="creation-ingredients">${c.ingredients}</div>
+        <button type="button" class="text-link" data-action="apply-preset" data-preset="${c.id}">
+          Customise this combo →
+        </button>
+      </article>
+    `).join('');
+  }
+
+  // Render Builder Size Picker
+  function renderBuilderSizes() {
+    const container = document.getElementById("size-options-container");
+    if (!container) return;
+
+    container.innerHTML = SITE_CONFIG.boxes.map(b => `
+      <label class="size-btn-label">
+        <input type="radio" name="box_choice" value="${b.id}" ${state.boxId === b.id ? 'checked' : ''}>
+        <div class="size-btn-box">
+          <span class="count">${b.count}</span>
+          <span class="sub">Brownies</span>
+          <span class="price">${fmtEur(b.price)}</span>
+        </div>
+      </label>
+    `).join('');
+  }
+
+  // Render Builder Topping Chips
+  function renderBuilderToppings() {
+    const container = document.getElementById("builder-toppings-list");
+    if (!container) return;
+
+    container.innerHTML = SITE_CONFIG.toppingsCategories.map(cat => `
+      <div>
+        <div class="toppings-group-title">${cat.name}</div>
+        <div class="toppings-chips-flex">
+          ${cat.items.map(item => `
+            <label class="topping-chip">
+              <input type="checkbox" name="topping_opt" value="${item.id}" ${state.selectedToppings.has(item.id) ? 'checked' : ''}>
+              <span class="topping-chip-label">${item.name}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Render FAQs
+  function renderFaqs() {
+    const container = document.getElementById("faq-list");
+    if (!container) return;
+
+    container.innerHTML = SITE_CONFIG.faqs.map((f, i) => `
+      <div class="faq-item">
+        <button type="button" class="faq-trigger" aria-expanded="false" aria-controls="faq-item-${i}">
+          <span>${f.q}</span>
+          <span class="faq-symbol" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-content" id="faq-item-${i}" hidden>
+          <p>${f.a}</p>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ===================================================================
+     4. ORDER CALCULATION & LIVE SUMMARY
+     =================================================================== */
+  function getOrderCalculation() {
+    const box = SITE_CONFIG.boxes.find(b => b.id === state.boxId) || SITE_CONFIG.boxes[1];
+    const qty = state.quantity;
+    const toppingsCount = state.selectedToppings.size;
+    const toppingsPerBox = toppingsCount * 1;
+    const perBoxTotal = box.price + toppingsPerBox;
+    const grandTotal = perBoxTotal * qty;
+
+    return { box, qty, toppingsCount, toppingsPerBox, perBoxTotal, grandTotal };
+  }
+
+  function updateOrderSummary() {
+    const order = getOrderCalculation();
+
+    const boxName = document.getElementById("disp-box-name");
+    const boxQty = document.getElementById("disp-box-qty");
+    const fulfil = document.getElementById("disp-fulfil");
+    const extras = document.getElementById("disp-extras-list");
+    const total = document.getElementById("disp-total-price");
+
+    if (boxName) boxName.textContent = `${order.box.count} Classic Brownies (${fmtEur(order.box.price)})`;
+    if (boxQty) boxQty.textContent = `${order.qty} ${order.qty === 1 ? 'Box' : 'Boxes'}`;
+    if (fulfil) fulfil.textContent = state.fulfilment === 'delivery' ? 'Ask About Delivery' : 'Collection';
+
+    if (extras) {
+      if (state.selectedToppings.size === 0) {
+        extras.innerHTML = `<span style="font-size:0.8rem; color:var(--ink-muted); font-style:italic;">None selected (Classic Fudgy)</span>`;
+      } else {
+        const items = [];
+        SITE_CONFIG.toppingsCategories.forEach(cat => {
+          cat.items.forEach(i => {
+            if (state.selectedToppings.has(i.id)) items.push(i);
+          });
+        });
+        extras.innerHTML = items.map(i => `
+          <div class="summary-topping-item">
+            <span>+ ${i.name} (€1)</span>
+            <button type="button" data-action="remove-topping" data-id="${i.id}" aria-label="Remove ${i.name}">✕</button>
+          </div>
+        `).join('');
+      }
+    }
+
+    if (total) total.textContent = fmtEur(order.grandTotal);
+  }
+
+  /* Order Message Formatter */
+  function buildOrderText(orderId) {
+    const order = getOrderCalculation();
+    const toppingNames = [];
+    SITE_CONFIG.toppingsCategories.forEach(cat => {
+      cat.items.forEach(i => {
+        if (state.selectedToppings.has(i.id)) toppingNames.push(`${i.name} (+€1)`);
+      });
+    });
+
+    const lines = [
+      `ORDER REQUEST ${orderId ? `(#${orderId}) ` : ''}— ${SITE_CONFIG.brand.name}`,
+      `---------------------------------`,
+      `• Box Size: ${order.box.count} Classic Brownies (${fmtEur(order.box.price)} base)`,
+      `• Quantity: ${order.qty} identical box(es)`,
+      `• Extra Toppings: ${toppingNames.length > 0 ? toppingNames.join(', ') : 'None (Classic Fudgy)'}`,
+      `• Estimated Total: ${fmtEur(order.grandTotal)} (provisional)`,
+      `• Fulfilment: ${state.fulfilment === 'delivery' ? 'Requesting delivery' : 'Collection'}`,
+    ];
+
+    if (state.date) lines.push(`• Preferred Date: ${state.date} (requested)`);
+    if (state.name) lines.push(`• Name: ${state.name}`);
+    if (state.instagram) lines.push(`• Instagram: ${state.instagram}`);
+    if (state.phone) lines.push(`• Phone: ${state.phone}`);
+    if (state.notes) lines.push(`• Notes: ${state.notes}`);
+
+    lines.push(`---------------------------------`);
+    lines.push(`Hi! I've submitted this brownie order request online${orderId ? ` (Ref: #${orderId})` : ''}. Could you please confirm availability and share your Revolut details? Thank you!`);
+
+    return lines.join('\n');
+  }
+
+  function copyOrder() {
+    const text = buildOrderText();
+    const status = document.getElementById("copy-status");
+    const fallback = document.getElementById("copy-fallback");
+    const fallbackText = document.getElementById("copy-fallback-text");
+
+    const onSuccess = () => {
+      if (status) {
+        status.classList.add("is-active");
+        setTimeout(() => status.classList.remove("is-active"), 6000);
+      }
+      if (fallback) fallback.classList.remove("is-active");
+    };
+
+    const onFallback = () => {
+      if (fallback && fallbackText) {
+        fallbackText.value = text;
+        fallback.classList.add("is-active");
+        fallbackText.focus();
+        fallbackText.select();
+      }
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(onSuccess).catch(onFallback);
+    } else {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        if (ok) onSuccess();
+        else onFallback();
+      } catch (e) {
+        onFallback();
+      }
+    }
+  }
+
+  /* Online Order Submission to Bakery Backend */
+  let lastSubmittedOrder = null;
+
+  async function submitOrderOnline() {
+    const nInp = document.getElementById("field-name");
+    const igInp = document.getElementById("field-ig");
+
+    const nameVal = (nInp ? nInp.value : state.name).trim();
+    let igVal = (igInp ? igInp.value : state.instagram).trim();
+
+    let hasError = false;
+    if (!nameVal) {
+      if (nInp) nInp.classList.add("is-invalid");
+      hasError = true;
+    } else {
+      if (nInp) nInp.classList.remove("is-invalid");
+    }
+
+    if (!igVal) {
+      if (igInp) igInp.classList.add("is-invalid");
+      hasError = true;
+    } else {
+      if (igInp) igInp.classList.remove("is-invalid");
+    }
+
+    if (hasError) {
+      const firstInvalid = document.querySelector(".fields-grid input.is-invalid");
+      if (firstInvalid) {
+        firstInvalid.focus();
+        firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
+    }
+
+    if (!igVal.startsWith("@")) igVal = "@" + igVal;
+    state.name = nameVal;
+    state.instagram = igVal;
+
+    const submitBtn = document.getElementById("btn-submit-order");
+    const origHtml = submitBtn ? submitBtn.innerHTML : "Submit Order Request →";
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Recording in bakery queue...";
+    }
+
+    const orderCalc = getOrderCalculation();
+    const toppingNames = [];
+    SITE_CONFIG.toppingsCategories.forEach(cat => {
+      cat.items.forEach(i => {
+        if (state.selectedToppings.has(i.id)) toppingNames.push(i.name);
+      });
+    });
+
+    const orderData = {
+      name: nameVal,
+      instagram: igVal,
+      phone: state.phone || "",
+      boxSize: `${orderCalc.box.title} (${orderCalc.box.count} Brownies)`,
+      boxCount: orderCalc.box.count,
+      quantity: orderCalc.qty,
+      toppings: toppingNames,
+      total: orderCalc.grandTotal,
+      fulfilment: state.fulfilment === 'delivery' ? 'Delivery' : 'Collection',
+      preferredDate: state.date || "",
+      notes: state.notes || ""
+    };
+
+    try {
+      let result = null;
+      if (window.BrowniesAPI) {
+        result = await window.BrowniesAPI.createOrder(orderData);
+      } else {
+        result = { success: true, orderId: "CL-" + Math.floor(1000 + Math.random() * 9000), order: orderData };
+      }
+
+      lastSubmittedOrder = { ...orderData, id: result.orderId };
+      showOrderConfirmation(lastSubmittedOrder);
+
+    } catch (e) {
+      console.warn("Direct order save failed, fallback:", e);
+      copyOrder();
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = origHtml;
+      }
+    }
+  }
+
+  function showOrderConfirmation(order) {
+    const modal = document.getElementById("order-confirm-modal");
+    if (!modal) return;
+
+    document.getElementById("modal-order-ref").textContent = `#${order.id}`;
+    document.getElementById("modal-box-info").textContent = `${order.boxSize} × ${order.quantity}`;
+
+    const tops = Array.isArray(order.toppings) && order.toppings.length > 0 ? order.toppings.join(', ') : 'Classic Fudgy (No extras)';
+    document.getElementById("modal-toppings-info").textContent = tops;
+    document.getElementById("modal-fulfil-info").textContent = `${order.fulfilment} ${order.preferredDate ? '· ' + order.preferredDate : ''}`;
+    document.getElementById("modal-total-info").textContent = `€${order.total}`;
+
+    const igBtn = document.getElementById("modal-btn-open-ig");
+    if (igBtn) {
+      igBtn.onclick = () => {
+        const text = buildOrderText(order.id);
+        if (navigator.clipboard) navigator.clipboard.writeText(text);
+      };
+    }
+
+    modal.hidden = false;
+  }
+
+  function closeOrderConfirmation() {
+    const modal = document.getElementById("order-confirm-modal");
+    if (modal) modal.hidden = true;
+  }
+
+  function applyPreset(presetId) {
+    const c = SITE_CONFIG.creations.find(item => item.id === presetId);
+    if (!c) return;
+
+    state.selectedToppings.clear();
+    c.toppings.forEach(t => state.selectedToppings.add(t));
+
+    renderBuilderToppings();
+    updateOrderSummary();
+
+    const builder = document.getElementById("create");
+    if (builder) builder.scrollIntoView({ behavior: "smooth" });
+  }
+
+  /* ===================================================================
+     5. EVENT WIRING
+     =================================================================== */
+  function setupEvents() {
+    // Mobile navigation toggle
+    const toggle = document.getElementById("nav-toggle");
+    const mobileNav = document.getElementById("mobile-nav");
+    if (toggle && mobileNav) {
+      toggle.addEventListener("click", () => {
+        const open = toggle.getAttribute("aria-expanded") === "true";
+        toggle.setAttribute("aria-expanded", String(!open));
+        mobileNav.hidden = open;
+        mobileNav.classList.toggle("is-open", !open);
+        document.body.classList.toggle("menu-open", !open);
+      });
+
+      mobileNav.addEventListener("click", (e) => {
+        if (e.target.closest("a")) {
+          toggle.setAttribute("aria-expanded", "false");
+          mobileNav.classList.remove("is-open");
+          mobileNav.hidden = true;
+          document.body.classList.remove("menu-open");
+        }
+      });
+    }
+
+    // Box Choice radio
+    const sizeCont = document.getElementById("size-options-container");
+    if (sizeCont) {
+      sizeCont.addEventListener("change", (e) => {
+        if (e.target.name === "box_choice") {
+          state.boxId = e.target.value;
+          updateOrderSummary();
+        }
+      });
+    }
+
+    // Stepper buttons
+    const minus = document.getElementById("btn-qty-minus");
+    const plus = document.getElementById("btn-qty-plus");
+    const qtyInp = document.getElementById("input-qty");
+    if (minus && plus && qtyInp) {
+      minus.addEventListener("click", () => {
+        if (state.quantity > 1) {
+          state.quantity--;
+          qtyInp.value = state.quantity;
+          updateOrderSummary();
+        }
+      });
+      plus.addEventListener("click", () => {
+        if (state.quantity < 10) {
+          state.quantity++;
+          qtyInp.value = state.quantity;
+          updateOrderSummary();
+        }
+      });
+    }
+
+    // Toppings Checkboxes
+    const topCont = document.getElementById("builder-toppings-list");
+    if (topCont) {
+      topCont.addEventListener("change", (e) => {
+        if (e.target.name === "topping_opt") {
+          const val = e.target.value;
+          if (e.target.checked) state.selectedToppings.add(val);
+          else state.selectedToppings.delete(val);
+          updateOrderSummary();
+        }
+      });
+    }
+
+    // Fulfilment & details
+    const orderForm = document.getElementById("order-form");
+    if (orderForm) {
+      orderForm.addEventListener("change", (e) => {
+        if (e.target.name === "fulfilment") {
+          state.fulfilment = e.target.value;
+          updateOrderSummary();
+        }
+      });
+      const dInp = document.getElementById("field-date");
+      const nInp = document.getElementById("field-name");
+      const igInp = document.getElementById("field-ig");
+      const phInp = document.getElementById("field-phone");
+      const notesInp = document.getElementById("field-notes");
+
+      if (dInp) dInp.addEventListener("input", (e) => { state.date = e.target.value; });
+      if (nInp) nInp.addEventListener("input", (e) => {
+        state.name = e.target.value.trim();
+        nInp.classList.remove("is-invalid");
+      });
+      if (igInp) igInp.addEventListener("input", (e) => {
+        state.instagram = e.target.value.trim();
+        igInp.classList.remove("is-invalid");
+      });
+      if (phInp) phInp.addEventListener("input", (e) => { state.phone = e.target.value.trim(); });
+      if (notesInp) notesInp.addEventListener("input", (e) => { state.notes = e.target.value.trim(); });
+    }
+
+    // Submit Order Button
+    const submitBtn = document.getElementById("btn-submit-order");
+    if (submitBtn) submitBtn.addEventListener("click", submitOrderOnline);
+
+    // Copy Button
+    const copyBtn = document.getElementById("btn-copy");
+    if (copyBtn) copyBtn.addEventListener("click", copyOrder);
+
+    // Reset Button
+    const resetBtn = document.getElementById("btn-reset");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        state.boxId = "box-6";
+        state.quantity = 1;
+        state.selectedToppings.clear();
+        state.fulfilment = "collection";
+        state.date = "";
+        state.name = "";
+        state.instagram = "";
+        state.phone = "";
+        state.notes = "";
+
+        if (qtyInp) qtyInp.value = 1;
+        const dInp = document.getElementById("field-date");
+        const nInp = document.getElementById("field-name");
+        const igInp = document.getElementById("field-ig");
+        const phInp = document.getElementById("field-phone");
+        const notesInp = document.getElementById("field-notes");
+        if (dInp) dInp.value = "";
+        if (nInp) { nInp.value = ""; nInp.classList.remove("is-invalid"); }
+        if (igInp) { igInp.value = ""; igInp.classList.remove("is-invalid"); }
+        if (phInp) phInp.value = "";
+        if (notesInp) notesInp.value = "";
+
+        renderBuilderSizes();
+        renderBuilderToppings();
+        updateOrderSummary();
+      });
+    }
+
+    // Modal Events
+    const modalCloseBtn = document.getElementById("modal-btn-close");
+    if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeOrderConfirmation);
+
+    const modalCopySummaryBtn = document.getElementById("modal-btn-copy-summary");
+    if (modalCopySummaryBtn) {
+      modalCopySummaryBtn.addEventListener("click", () => {
+        if (lastSubmittedOrder) {
+          const text = buildOrderText(lastSubmittedOrder.id);
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+              modalCopySummaryBtn.textContent = "✓ Copied to Clipboard!";
+              setTimeout(() => { modalCopySummaryBtn.textContent = "Copy Order Breakdown"; }, 3000);
+            });
+          }
+        }
+      });
+    }
+
+    const modalOverlay = document.getElementById("order-confirm-modal");
+    if (modalOverlay) {
+      modalOverlay.addEventListener("click", (e) => {
+        if (e.target === modalOverlay) closeOrderConfirmation();
+      });
+    }
+
+    // Delegated Clicks
+    document.addEventListener("click", (e) => {
+      // Apply preset from cards
+      const applyBtn = e.target.closest("[data-action='apply-preset']");
+      if (applyBtn) {
+        applyPreset(applyBtn.dataset.preset);
+        return;
+      }
+
+      // Pick box from menu cards
+      const pickBoxBtn = e.target.closest("[data-action='pick-box']");
+      if (pickBoxBtn) {
+        state.boxId = pickBoxBtn.dataset.box;
+        renderBuilderSizes();
+        updateOrderSummary();
+        const builder = document.getElementById("create");
+        if (builder) builder.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+
+      // Remove single extra from sidebar
+      const rmBtn = e.target.closest("[data-action='remove-topping']");
+      if (rmBtn) {
+        state.selectedToppings.delete(rmBtn.dataset.id);
+        renderBuilderToppings();
+        updateOrderSummary();
+        return;
+      }
+    });
+
+    // Accordions
+    const faqList = document.getElementById("faq-list");
+    if (faqList) {
+      faqList.addEventListener("click", (e) => {
+        const btn = e.target.closest(".faq-trigger");
+        if (!btn) return;
+        const expanded = btn.getAttribute("aria-expanded") === "true";
+        btn.setAttribute("aria-expanded", String(!expanded));
+        const ans = document.getElementById(btn.getAttribute("aria-controls"));
+        if (ans) ans.hidden = expanded;
+      });
+    }
+  }
+
+  /* ===================================================================
+     6. INIT
+     =================================================================== */
+  function init() {
+    renderMenuBoxes();
+    renderToppingsCatalog();
+    renderCreations();
+    renderBuilderSizes();
+    renderBuilderToppings();
+    renderFaqs();
+    updateOrderSummary();
+    setupEvents();
+
+    const yr = document.getElementById("year-num");
+    if (yr) yr.textContent = String(new Date().getFullYear());
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>

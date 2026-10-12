@@ -1,0 +1,2500 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Dashboard — CL'S Brownies Order Manager</title>
+  <meta name="description"
+    content="Backoffice operations and order fulfillment manager for CL'S Brownies Dublin, connected to Google Sheets.">
+  <meta name="theme-color" content="#111111">
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23111111'/%3E%3Cpath d='M9 16h14M16 9v14' stroke='%23FAF9F6' stroke-width='1.5'/%3E%3C/svg%3E">
+
+  <style>
+    /* =====================================================================
+       1. DESIGN TOKENS — shared with storefront (index.html)
+       Quiet minimalism & Helvetica typography
+       ===================================================================== */
+    :root {
+      --bg: #FBFBFA;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #F3F2EF;
+      --bg-hover: #ECEAE4;
+
+      --ink: #111111;
+      --ink-secondary: #555555;
+      --ink-muted: #888888;
+      --ink-faint: #BBBBBB;
+
+      --border: rgba(0, 0, 0, 0.08);
+      --border-strong: rgba(0, 0, 0, 0.22);
+      --border-focus: #111111;
+
+      /* Muted functional accents (used sparingly for status only) */
+      --ok: #2F6B3F;
+      --ok-bg: #E9F0EA;
+      --warn: #8A5A12;
+      --warn-bg: #F5EEE1;
+      --danger: #9B2C2C;
+      --danger-bg: #F6E8E8;
+
+      --font: "Helvetica Neue", Helvetica, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+
+      --header-height: 64px;
+      --gutter: clamp(1.25rem, 3vw, 2.5rem);
+
+      --radius: 2px;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --transition: 0.2s var(--ease);
+    }
+
+    /* =====================================================================
+       2. RESET & BASE
+       ===================================================================== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--ink);
+      background-color: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--ink);
+      outline-offset: 2px;
+    }
+
+    ::selection {
+      background: var(--ink);
+      color: var(--bg);
+    }
+
+    .label-small {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    /* =====================================================================
+       3. APP HEADER (mirrors storefront .site-header)
+       ===================================================================== */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      min-height: var(--header-height);
+      background: rgba(251, 251, 250, 0.94);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem var(--gutter);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+
+    .brand-text h1 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    .brand-text h1 a:hover {
+      color: var(--ink-secondary);
+    }
+
+    .brand-text h1 span {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--ink-muted);
+      padding-left: 0.75rem;
+      border-left: 1px solid var(--border-strong);
+    }
+
+    .brand-text p {
+      display: none;
+    }
+
+    .header-center {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .clock-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      color: var(--ink-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sheets-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--ink-secondary);
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-strong);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .sheets-badge:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+      background: var(--bg-subtle);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .status-dot.connected {
+      background-color: var(--ok);
+    }
+
+    .status-dot.local {
+      background-color: var(--warn);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    /* =====================================================================
+       4. BUTTONS (identical to storefront button system)
+       ===================================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      height: 44px;
+      padding: 0 1.5rem;
+      border-radius: var(--radius);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: all var(--transition);
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
+    .btn-primary:hover {
+      background: #333333;
+      border-color: #333333;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--ink);
+      border-color: var(--border-strong);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--ink);
+      background: var(--bg-subtle);
+    }
+
+    .btn-danger {
+      color: var(--danger);
+    }
+
+    .btn-danger:hover {
+      border-color: var(--danger);
+      background: var(--danger-bg);
+    }
+
+    .btn-ghost {
+      color: var(--ink-secondary);
+      width: 36px;
+      height: 36px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      transition: all var(--transition);
+    }
+
+    .btn-ghost:hover {
+      color: var(--ink);
+      border-color: var(--border-strong);
+    }
+
+    .btn-sm {
+      height: 36px;
+      padding: 0 1.1rem;
+      font-size: 0.8rem;
+    }
+
+    .btn.loading svg {
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* =====================================================================
+       5. MAIN DASHBOARD LAYOUT
+       ===================================================================== */
+    .dashboard-container {
+      max-width: 1560px;
+      width: 100%;
+      margin: 0 auto;
+      padding: clamp(1.5rem, 3vw, 2.5rem) var(--gutter);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    .dashboard-intro h2 {
+      font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.4rem);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+
+    .dashboard-intro p {
+      font-size: 0.95rem;
+      color: var(--ink-secondary);
+      margin-top: 0.4rem;
+    }
+
+    .dashboard-intro .label-small {
+      display: block;
+      margin-bottom: 0.6rem;
+    }
+
+    /* KPI row — editorial figures separated by hairlines */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      border-top: 1px solid var(--border-strong);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat-card {
+      padding: 1.25rem 1.25rem 1.35rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      border-right: 1px solid var(--border);
+      padding-left: 1.25rem;
+      transition: background var(--transition);
+    }
+
+    .stat-card:first-child {
+      padding-left: 0;
+    }
+
+    .stat-card:last-child {
+      border-right: none;
+    }
+
+    .stat-header {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    .stat-icon {
+      display: none;
+    }
+
+    .stat-value {
+      font-size: clamp(1.9rem, 1.5rem + 1.2vw, 2.6rem);
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-sub {
+      font-size: 0.8rem;
+      color: var(--ink-secondary);
+    }
+
+    /* =====================================================================
+       6. TOOLBAR
+       ===================================================================== */
+    .toolbar-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      height: 40px;
+      padding: 0 0.85rem;
+      border-radius: var(--radius);
+      min-width: 260px;
+      flex: 1;
+      max-width: 380px;
+      color: var(--ink-muted);
+      transition: border-color var(--transition);
+    }
+
+    .search-box:focus-within {
+      border-color: var(--ink);
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 0.85rem;
+      width: 100%;
+      color: var(--ink);
+    }
+
+    .search-box input::placeholder {
+      color: var(--ink-muted);
+    }
+
+    .filters-group {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      height: 34px;
+      padding: 0 0.9rem;
+      border-radius: var(--radius);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--ink-secondary);
+      border: 1px solid var(--border);
+      background: transparent;
+      transition: all var(--transition);
+    }
+
+    .filter-pill:hover {
+      color: var(--ink);
+      border-color: var(--border-strong);
+    }
+
+    .filter-pill.active {
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
+    .view-toggle {
+      display: flex;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      height: 36px;
+    }
+
+    .view-toggle-btn {
+      padding: 0 0.85rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--ink-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all var(--transition);
+    }
+
+    .view-toggle-btn+.view-toggle-btn {
+      border-left: 1px solid var(--border-strong);
+    }
+
+    .view-toggle-btn:hover {
+      color: var(--ink);
+    }
+
+    .view-toggle-btn.active {
+      background: var(--ink);
+      color: var(--bg);
+    }
+
+    /* =====================================================================
+       7. KANBAN BOARD
+       ===================================================================== */
+    .kanban-view {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(270px, 1fr));
+      gap: 1rem;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+      align-items: start;
+    }
+
+    .kanban-column {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      min-height: 520px;
+      max-height: calc(100vh - 260px);
+    }
+
+    .column-header {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: var(--bg-subtle);
+      z-index: 2;
+    }
+
+    .column-title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    .column-count {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--ink-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .column-cards {
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .column-empty {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--ink-muted);
+      font-size: 0.8rem;
+    }
+
+    /* Order card */
+    .order-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transition: border-color var(--transition), transform var(--transition);
+      cursor: pointer;
+    }
+
+    .order-card:hover {
+      border-color: var(--ink);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .order-id-pill {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .order-time {
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+    }
+
+    .card-customer {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .customer-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: -0.01em;
+    }
+
+    .customer-ig {
+      font-size: 0.8rem;
+      color: var(--ink-secondary);
+      text-decoration: underline;
+      text-decoration-color: var(--border-strong);
+      text-underline-offset: 3px;
+      align-self: flex-start;
+      transition: color var(--transition);
+    }
+
+    .customer-ig:hover {
+      color: var(--ink);
+      text-decoration-color: var(--ink);
+    }
+
+    .card-box-info {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      padding: 0.6rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-box-name {
+      font-weight: 500;
+    }
+
+    .card-box-date {
+      font-size: 0.75rem;
+      color: var(--ink-secondary);
+      white-space: nowrap;
+    }
+
+    .card-toppings-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+
+    .topping-chip {
+      font-size: 0.72rem;
+      color: var(--ink-secondary);
+      background: var(--bg-subtle);
+      padding: 0.15rem 0.45rem;
+      border-radius: var(--radius);
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+    }
+
+    .card-total {
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .card-badges {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.45rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-strong);
+      color: var(--ink-secondary);
+      white-space: nowrap;
+    }
+
+    .badge-delivery,
+    .badge-collection {
+      border-color: var(--border-strong);
+      color: var(--ink-secondary);
+    }
+
+    .badge-paid {
+      background: var(--ok-bg);
+      border-color: transparent;
+      color: var(--ok);
+    }
+
+    .badge-unpaid {
+      background: var(--danger-bg);
+      border-color: transparent;
+      color: var(--danger);
+    }
+
+    .card-quick-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .quick-move-btn {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--ink);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-color: var(--border-strong);
+      transition: all var(--transition);
+    }
+
+    .quick-move-btn:hover {
+      text-decoration-color: var(--ink);
+    }
+
+    /* =====================================================================
+       8. TABLE VIEW
+       ===================================================================== */
+    .table-view {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: none;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    .orders-table th {
+      padding: 0.85rem 1rem;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      border-bottom: 1px solid var(--border-strong);
+      white-space: nowrap;
+    }
+
+    .orders-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .orders-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .orders-table tbody tr {
+      transition: background var(--transition);
+    }
+
+    .orders-table tbody tr:hover td {
+      background: var(--bg-subtle);
+    }
+
+    .table-link {
+      color: var(--ink-secondary);
+      text-decoration: underline;
+      text-decoration-color: var(--border-strong);
+      text-underline-offset: 3px;
+    }
+
+    .table-link:hover {
+      color: var(--ink);
+    }
+
+    .status-select-inline {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      height: 32px;
+      padding: 0 0.5rem;
+      font-size: 0.78rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .status-select-inline:focus {
+      border-color: var(--ink);
+    }
+
+    /* =====================================================================
+       9. MODALS
+       ===================================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 17, 17, 0.35);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s var(--ease);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: var(--bg);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      max-width: 620px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12);
+      display: flex;
+      flex-direction: column;
+      transform: translateY(12px);
+      transition: transform 0.3s var(--ease);
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h2 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.6rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-group > label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    .form-control {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      height: 44px;
+      padding: 0 0.85rem;
+      font-size: 0.9rem;
+      color: var(--ink);
+      outline: none;
+      transition: border-color var(--transition);
+    }
+
+    .form-control::placeholder {
+      color: var(--ink-faint);
+    }
+
+    .form-control:focus {
+      border-color: var(--ink);
+    }
+
+    textarea.form-control {
+      height: auto;
+      min-height: 90px;
+      padding: 0.7rem 0.85rem;
+      resize: vertical;
+    }
+
+    .form-hint {
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+    }
+
+    .toppings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem 1rem;
+      padding: 0.85rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .toppings-grid label {
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    input[type="checkbox"] {
+      accent-color: var(--ink);
+      width: 15px;
+      height: 15px;
+    }
+
+    .setup-guide {
+      background: var(--bg-subtle);
+      padding: 1.1rem 1.25rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .setup-guide h4 {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .setup-guide ol {
+      font-size: 0.85rem;
+      color: var(--ink-secondary);
+      padding-left: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .setup-guide a {
+      color: var(--ink);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .setup-guide code {
+      font-size: 0.8rem;
+      background: var(--bg-hover);
+      padding: 0.05rem 0.3rem;
+    }
+
+    /* =====================================================================
+       10. ORDER DETAIL DRAWER
+       ===================================================================== */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 17, 17, 0.3);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      z-index: 90;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s var(--ease);
+    }
+
+    .drawer-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 520px;
+      max-width: 95vw;
+      background: var(--bg);
+      border-left: 1px solid var(--border-strong);
+      z-index: 95;
+      transform: translateX(100%);
+      transition: transform 0.35s var(--ease);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer.active {
+      transform: translateX(0);
+      box-shadow: -24px 0 60px rgba(0, 0, 0, 0.08);
+    }
+
+    .drawer-header {
+      height: var(--header-height);
+      padding: 0 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .drawer-header .order-id-pill {
+      font-size: 0.85rem;
+    }
+
+    .drawer-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    .detail-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .detail-section-title {
+      font-size: 0.72rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-muted);
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border-strong);
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.88rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .detail-row.total-row {
+      padding-top: 0.25rem;
+      align-items: baseline;
+    }
+
+    .detail-row.total-row .detail-label {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .detail-row.total-row .detail-value {
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .detail-label {
+      color: var(--ink-secondary);
+    }
+
+    .detail-value {
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .detail-value a {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .detail-notes {
+      font-size: 0.9rem;
+      color: var(--ink-secondary);
+      line-height: 1.6;
+    }
+
+    .message-templates-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .template-card {
+      padding: 0.75rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .template-card:last-child {
+      border-bottom: none;
+    }
+
+    .template-info h4 {
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .template-info p {
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+    }
+
+    .drawer-actions {
+      display: flex;
+      gap: 0.6rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* =====================================================================
+       11. PRINT TICKET (Thermal Kitchen Slip)
+       ===================================================================== */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      #print-ticket-area,
+      #print-ticket-area * {
+        visibility: visible;
+      }
+
+      #print-ticket-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 300px;
+        padding: 10px;
+        font-family: monospace;
+        color: #000;
+        background: #fff;
+      }
+    }
+
+    /* =====================================================================
+       12. TOASTS
+       ===================================================================== */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 200;
+    }
+
+    .toast {
+      background: var(--ink);
+      color: var(--bg);
+      border-radius: var(--radius);
+      padding: 0.8rem 1.1rem;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+      animation: toastIn 0.3s var(--ease);
+      transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+    }
+
+    .toast.error {
+      background: var(--danger);
+    }
+
+    @keyframes toastIn {
+      from {
+        transform: translateY(10px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* =====================================================================
+       13. RESPONSIVE
+       ===================================================================== */
+    @media (max-width: 1024px) {
+      .app-header {
+        flex-wrap: wrap;
+      }
+
+      .kanban-view {
+        grid-template-columns: repeat(5, 260px);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .stat-card {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding-left: 0;
+      }
+
+      .stat-card:last-child {
+        border-bottom: none;
+      }
+
+      .clock-badge {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="app-header">
+    <div class="brand-wrap">
+      <div class="brand-text">
+        <h1><a href="index.html">CL'S Brownies</a> <span>Order Manager</span></h1>
+        <p>Dublin Bakery Operations &amp; Order Pipeline</p>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="clock-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+        <span id="live-dublin-clock">--:--:-- GMT</span>
+      </div>
+
+      <div class="sheets-badge" id="btn-open-settings" title="Click to configure Google Sheets integration">
+        <span class="status-dot local" id="header-status-dot"></span>
+        <span id="header-status-text">Local Storage Mode</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-sync"
+        title="Sync latest orders with Google Sheets">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+        </svg>
+        Sync
+      </button>
+      <button type="button" class="btn btn-primary btn-sm" id="btn-new-order">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        New Order
+      </button>
+      <a href="index.html" target="_blank" class="btn btn-secondary btn-sm" title="View customer website">
+        Storefront ↗
+      </a>
+    </div>
+  </header>
+
+  <!-- ===================== MAIN DASHBOARD ===================== -->
+  <main class="dashboard-container">
+
+    <!-- 0. PAGE INTRO -->
+    <div class="dashboard-intro">
+      <span class="label-small">Dublin — Bakery Operations</span>
+      <h2>Orders</h2>
+      <p>Every request from the storefront, synced with Google Sheets.</p>
+    </div>
+
+    <!-- 1. KPI STATS ROW -->
+    <section class="stats-grid">
+      <div class="stat-card amber">
+        <div class="stat-header">
+          <span>Total Orders</span>
+        </div>
+        <div class="stat-value" id="kpi-total-orders">0</div>
+        <div class="stat-sub">All logged bakery orders</div>
+      </div>
+
+      <div class="stat-card rose">
+        <div class="stat-header">
+          <span>Needs Review</span>
+        </div>
+        <div class="stat-value" id="kpi-pending-orders">0</div>
+        <div class="stat-sub">New orders awaiting confirmation</div>
+      </div>
+
+      <div class="stat-card purple">
+        <div class="stat-header">
+          <span>In The Oven</span>
+        </div>
+        <div class="stat-value" id="kpi-baking-orders">0</div>
+        <div class="stat-sub">Currently in baking / assembly</div>
+      </div>
+
+      <div class="stat-card blue">
+        <div class="stat-header">
+          <span>Ready for Collection</span>
+        </div>
+        <div class="stat-value" id="kpi-ready-orders">0</div>
+        <div class="stat-sub">Packaged &amp; ready for pickup</div>
+      </div>
+
+      <div class="stat-card emerald">
+        <div class="stat-header">
+          <span>Gross Volume</span>
+        </div>
+        <div class="stat-value" id="kpi-total-revenue">€0</div>
+        <div class="stat-sub">Total order book value</div>
+      </div>
+    </section>
+
+    <!-- 2. TOOLBAR (SEARCH, STATUS FILTERS, VIEW TOGGLE) -->
+    <div class="toolbar-wrap">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input type="text" id="search-input" placeholder="Search order ID, customer name, @instagram...">
+      </div>
+
+      <div class="filters-group">
+        <button type="button" class="filter-pill active" data-filter="all">All</button>
+        <button type="button" class="filter-pill" data-filter="New">New</button>
+        <button type="button" class="filter-pill" data-filter="Confirmed">Confirmed</button>
+        <button type="button" class="filter-pill" data-filter="Baking">Baking</button>
+        <button type="button" class="filter-pill" data-filter="Ready">Ready</button>
+        <button type="button" class="filter-pill" data-filter="Fulfilled">Fulfilled</button>
+      </div>
+
+      <div class="filters-group">
+        <div class="view-toggle">
+          <button type="button" class="view-toggle-btn active" id="view-kanban-btn" title="Kanban Pipeline">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="18" rx="1" />
+              <rect x="14" y="3" width="7" height="18" rx="1" />
+            </svg>
+            Board
+          </button>
+          <button type="button" class="view-toggle-btn" id="view-table-btn" title="Detailed Table">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="8" y1="6" x2="21" y2="6" />
+              <line x1="8" y1="12" x2="21" y2="12" />
+              <line x1="8" y1="18" x2="21" y2="18" />
+              <line x1="3" y1="6" x2="3.01" y2="6" />
+              <line x1="3" y1="12" x2="3.01" y2="12" />
+              <line x1="3" y1="18" x2="3.01" y2="18" />
+            </svg>
+            Table
+          </button>
+        </div>
+
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-export-csv" title="Download CSV Backup">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- 3. KANBAN BOARD VIEW -->
+    <section class="kanban-view" id="kanban-view">
+      <!-- Col 1: New Orders -->
+      <div class="kanban-column" data-status="New">
+        <div class="column-header">
+          <div class="column-title">
+            <span>New Requests</span>
+          </div>
+          <span class="column-count" id="count-New">0</span>
+        </div>
+        <div class="column-cards" id="cards-New"></div>
+      </div>
+
+      <!-- Col 2: Confirmed -->
+      <div class="kanban-column" data-status="Confirmed">
+        <div class="column-header">
+          <div class="column-title">
+            <span>Confirmed / Revolut</span>
+          </div>
+          <span class="column-count" id="count-Confirmed">0</span>
+        </div>
+        <div class="column-cards" id="cards-Confirmed"></div>
+      </div>
+
+      <!-- Col 3: Baking -->
+      <div class="kanban-column" data-status="Baking">
+        <div class="column-header">
+          <div class="column-title">
+            <span>In The Oven</span>
+          </div>
+          <span class="column-count" id="count-Baking">0</span>
+        </div>
+        <div class="column-cards" id="cards-Baking"></div>
+      </div>
+
+      <!-- Col 4: Ready -->
+      <div class="kanban-column" data-status="Ready">
+        <div class="column-header">
+          <div class="column-title">
+            <span>Ready for Pickup</span>
+          </div>
+          <span class="column-count" id="count-Ready">0</span>
+        </div>
+        <div class="column-cards" id="cards-Ready"></div>
+      </div>
+
+      <!-- Col 5: Fulfilled -->
+      <div class="kanban-column" data-status="Fulfilled">
+        <div class="column-header">
+          <div class="column-title">
+            <span>Completed</span>
+          </div>
+          <span class="column-count" id="count-Fulfilled">0</span>
+        </div>
+        <div class="column-cards" id="cards-Fulfilled"></div>
+      </div>
+    </section>
+
+    <!-- 4. DATA TABLE VIEW -->
+    <section class="table-view" id="table-view">
+      <div class="table-wrap">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Instagram</th>
+              <th>Box Size</th>
+              <th>Toppings</th>
+              <th>Date</th>
+              <th>Fulfilment</th>
+              <th>Total</th>
+              <th>Payment</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="table-orders-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== ORDER DETAIL DRAWER ===================== -->
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+  <aside class="drawer" id="order-drawer">
+    <div class="drawer-header">
+      <div style="display:flex; align-items:center; gap:0.6rem;">
+        <span class="order-id-pill" id="drawer-order-id">#CL-0000</span>
+        <span class="badge" id="drawer-badge-status">New</span>
+      </div>
+      <button type="button" class="btn-ghost" id="drawer-close" aria-label="Close drawer">✕</button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Customer Details -->
+      <div class="detail-section">
+        <span class="detail-section-title">Customer Information</span>
+        <div class="detail-row">
+          <span class="detail-label">Name</span>
+          <span class="detail-value" id="drawer-cust-name">-</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Instagram</span>
+          <span class="detail-value">
+            <a href="#" target="_blank" id="drawer-cust-ig">@unknown</a>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Phone</span>
+          <span class="detail-value" id="drawer-cust-phone">-</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Preferred Date</span>
+          <span class="detail-value" id="drawer-order-date">-</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Fulfilment</span>
+          <span class="detail-value" id="drawer-order-fulfil">-</span>
+        </div>
+      </div>
+
+      <!-- Order Item Details -->
+      <div class="detail-section">
+        <span class="detail-section-title">Brownie Order Items</span>
+        <div class="detail-row">
+          <span class="detail-label">Box Selection</span>
+          <span class="detail-value" id="drawer-box-type">-</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Quantity</span>
+          <span class="detail-value" id="drawer-box-qty">-</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Selected Toppings</span>
+          <span class="detail-value" id="drawer-box-toppings">-</span>
+        </div>
+        <div class="detail-row total-row">
+          <span class="detail-label">Total Amount</span>
+          <span class="detail-value" id="drawer-total-price">€0</span>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="detail-section">
+        <span class="detail-section-title">Customer Notes / Allergies</span>
+        <p id="drawer-order-notes" class="detail-notes">No
+          additional notes.</p>
+      </div>
+
+      <!-- Management Actions -->
+      <div class="detail-section">
+        <span class="detail-section-title">Pipeline &amp; Payment Status</span>
+        <div class="form-group">
+          <label for="drawer-status-select">Change Order Status</label>
+          <select id="drawer-status-select" class="form-control">
+            <option value="New">📥 New (Needs Review)</option>
+            <option value="Confirmed">💬 Confirmed (Revolut Requested)</option>
+            <option value="Baking">🥣 In The Oven (Baking)</option>
+            <option value="Ready">🎁 Ready for Collection / Delivery</option>
+            <option value="Fulfilled">✅ Fulfilled &amp; Complete</option>
+            <option value="Cancelled">❌ Cancelled</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="drawer-payment-select">Payment Status</label>
+          <select id="drawer-payment-select" class="form-control">
+            <option value="Unpaid">🔴 Unpaid</option>
+            <option value="Paid (Revolut)">🟢 Paid via Revolut</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Instagram Reply Generator -->
+      <div class="detail-section">
+        <span class="detail-section-title">Quick Instagram DM Replies</span>
+        <div class="message-templates-box">
+          <div class="template-card">
+            <div class="template-info">
+              <h4>Confirm &amp; Revolut</h4>
+              <p>Send pricing, date confirmation &amp; Revolut request</p>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-template-confirm">Copy</button>
+          </div>
+
+          <div class="template-card">
+            <div class="template-info">
+              <h4>In The Oven</h4>
+              <p>Notify that their fresh batch is baking now</p>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-template-baking">Copy</button>
+          </div>
+
+          <div class="template-card">
+            <div class="template-info">
+              <h4>Ready for Pickup</h4>
+              <p>Notify that their box is boxed and ready</p>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-template-ready">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kitchen Ticket & Danger Zone -->
+      <div class="drawer-actions">
+        <button type="button" class="btn btn-secondary" style="flex:1;" id="btn-print-ticket">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9" />
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+            <rect x="6" y="14" width="12" height="8" />
+          </svg>
+          Print Kitchen Slip
+        </button>
+        <button type="button" class="btn btn-secondary btn-danger" id="btn-delete-order"
+          title="Delete order">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===================== GOOGLE SHEETS SETTINGS MODAL ===================== -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-content" style="max-width: 680px;">
+      <div class="modal-header">
+        <h2>Google Sheets Integration</h2>
+        <button type="button" class="btn-ghost" id="settings-close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <p style="font-size:0.9rem; color:var(--ink-secondary);">
+          Connect CL'S Brownies directly to a live Google Sheet. Customer orders placed on the website will be logged
+          instantly in the spreadsheet, and this dashboard will stay in two-way sync.
+        </p>
+
+        <div class="form-group">
+          <label for="input-sheets-url">Google Apps Script Web App URL</label>
+          <input type="url" id="input-sheets-url" class="form-control"
+            placeholder="https://script.google.com/macros/s/AKfycbyRoaPpcl_-H2vv8VWzJnhb2eO2_8EkP2dPulnkFyJ32Q1oFY7-xQb-0EAv8-79Habw/exec">
+          <span class="form-hint">Must be deployed as Web App with access set to
+            "Anyone".</span>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-test-connection">
+            Test Connection
+          </button>
+          <span id="test-connection-status" class="form-hint"></span>
+        </div>
+
+        <hr style="border:none; border-top:1px solid var(--border); margin:0.5rem 0;">
+
+        <!-- Quick Setup Guide -->
+        <div class="setup-guide">
+          <h4>2-Minute Google Sheets Setup</h4>
+          <ol>
+            <li>Create a blank spreadsheet at <a href="https://sheets.new" target="_blank">sheets.new</a>.</li>
+            <li>In the menu, open <strong>Extensions &gt; Apps Script</strong>.</li>
+            <li>Paste the code from <code>google-apps-script.js</code> (click button below to copy).</li>
+            <li>Click <strong>Deploy &gt; New deployment</strong>, select <strong>Web app</strong>, set <em>Who has
+                access</em> to <strong>Anyone</strong>, then click <strong>Deploy</strong>.</li>
+            <li>Copy your generated Web App URL and paste it into the field above!</li>
+          </ol>
+          <div style="margin-top:0.75rem;">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-apps-script">
+              Copy Apps Script Code
+            </button>
+          </div>
+        </div>
+
+        <!-- Demo Data Reset -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding-top:0.5rem;">
+          <div>
+            <span style="font-size:0.88rem; font-weight:600; display:block;">Reset Sample Orders</span>
+            <span class="form-hint">Restore Dublin demo orders for testing</span>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-demo">Reset Demo</button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn-settings-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btn-save-settings">Save &amp; Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MANUAL NEW ORDER MODAL ===================== -->
+  <div class="modal-overlay" id="new-order-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Log New Order</h2>
+        <button type="button" class="btn-ghost" id="new-order-close">✕</button>
+      </div>
+
+      <form id="form-new-order">
+        <div class="modal-body">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+            <div class="form-group">
+              <label for="new-cust-name">Customer Name *</label>
+              <input type="text" id="new-cust-name" class="form-control" placeholder="e.g. Rachel Kelly" required>
+            </div>
+            <div class="form-group">
+              <label for="new-cust-ig">Instagram Handle *</label>
+              <input type="text" id="new-cust-ig" class="form-control" placeholder="@rachelk" required>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+            <div class="form-group">
+              <label for="new-cust-phone">Phone / WhatsApp</label>
+              <input type="tel" id="new-cust-phone" class="form-control" placeholder="087 123 4567">
+            </div>
+            <div class="form-group">
+              <label for="new-order-date">Preferred Date</label>
+              <input type="date" id="new-order-date" class="form-control">
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:2fr 1fr; gap:0.75rem;">
+            <div class="form-group">
+              <label for="new-box-size">Box Size *</label>
+              <select id="new-box-size" class="form-control" required>
+                <option value="Box of 6">Box of 6 (€14)</option>
+                <option value="Box of 4">Box of 4 (€10)</option>
+                <option value="Box of 12">Box of 12 (€20)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="new-quantity">Quantity</label>
+              <input type="number" id="new-quantity" class="form-control" min="1" max="20" value="1" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Extra Toppings (+€1 each)</label>
+            <div class="toppings-grid">
+              <label><input type="checkbox"
+                  name="new-top" value="Lotus Biscoff Biscuit"> Lotus Biscoff</label>
+              <label><input type="checkbox"
+                  name="new-top" value="Crushed Oreos"> Crushed Oreos</label>
+              <label><input type="checkbox"
+                  name="new-top" value="Kinder Bueno"> Kinder Bueno</label>
+              <label><input type="checkbox"
+                  name="new-top" value="Pistachio Cream"> Pistachio Cream</label>
+              <label><input type="checkbox"
+                  name="new-top" value="Salted Caramel Drizzle"> Salted Caramel</label>
+              <label><input type="checkbox"
+                  name="new-top" value="Fresh Raspberries"> Fresh Raspberries</label>
+              <label><input type="checkbox"
+                  name="new-top" value="White Chocolate Drizzle"> White Chocolate</label>
+              <label><input type="checkbox"
+                  name="new-top" value="Milk Chocolate Drizzle"> Milk Chocolate</label>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+            <div class="form-group">
+              <label for="new-fulfilment">Fulfilment</label>
+              <select id="new-fulfilment" class="form-control">
+                <option value="Collection">Collection</option>
+                <option value="Delivery">Delivery</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="new-payment-status">Payment</label>
+              <select id="new-payment-status" class="form-control">
+                <option value="Unpaid">Unpaid</option>
+                <option value="Paid (Revolut)">Paid (Revolut)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="new-notes">Customer Notes / Allergens</label>
+            <textarea id="new-notes" class="form-control"
+              placeholder="Any special notes or collection time requests..."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btn-new-order-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================== HIDDEN PRINT TICKET AREA ===================== -->
+  <div id="print-ticket-area" style="display:none;"></div>
+
+  <!-- ===================== TOAST NOTIFICATION CONTAINER ===================== -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Shared Orders API -->
+  <script src="orders-api.js"></script>
+
+  <!-- ===================== ADMIN DASHBOARD CONTROLLER ===================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      // State
+      let allOrders = [];
+      let currentFilter = 'all';
+      let searchQuery = '';
+      let currentView = 'kanban';
+      let activeOrder = null;
+
+      // DOM Elements
+      const kanbanView = document.getElementById('kanban-view');
+      const tableView = document.getElementById('table-view');
+      const searchInput = document.getElementById('search-input');
+      const filterPills = document.querySelectorAll('.filter-pill');
+      const viewKanbanBtn = document.getElementById('view-kanban-btn');
+      const viewTableBtn = document.getElementById('view-table-btn');
+      const btnSync = document.getElementById('btn-sync');
+      const btnOpenSettings = document.getElementById('btn-open-settings');
+      const settingsModal = document.getElementById('settings-modal');
+      const settingsClose = document.getElementById('settings-close');
+      const btnSettingsCancel = document.getElementById('btn-settings-cancel');
+      const btnSaveSettings = document.getElementById('btn-save-settings');
+      const inputSheetsUrl = document.getElementById('input-sheets-url');
+      const btnTestConn = document.getElementById('btn-test-connection');
+      const testConnStatus = document.getElementById('test-connection-status');
+      const btnNewOrder = document.getElementById('btn-new-order');
+      const newOrderModal = document.getElementById('new-order-modal');
+      const newOrderClose = document.getElementById('new-order-close');
+      const btnNewOrderCancel = document.getElementById('btn-new-order-cancel');
+      const formNewOrder = document.getElementById('form-new-order');
+      const orderDrawer = document.getElementById('order-drawer');
+      const drawerOverlay = document.getElementById('drawer-overlay');
+      const drawerClose = document.getElementById('drawer-close');
+      const btnExportCsv = document.getElementById('btn-export-csv');
+      const btnResetDemo = document.getElementById('btn-reset-demo');
+      const btnCopyScript = document.getElementById('btn-copy-apps-script');
+
+      // KPI elements
+      const kpiTotal = document.getElementById('kpi-total-orders');
+      const kpiPending = document.getElementById('kpi-pending-orders');
+      const kpiBaking = document.getElementById('kpi-baking-orders');
+      const kpiReady = document.getElementById('kpi-ready-orders');
+      const kpiRevenue = document.getElementById('kpi-total-revenue');
+
+      // Dublin Clock
+      function updateDublinClock() {
+        const clockEl = document.getElementById('live-dublin-clock');
+        if (!clockEl) return;
+        const now = new Date();
+        clockEl.textContent = now.toLocaleTimeString('en-GB', {
+          timeZone: 'Europe/Dublin',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        }) + ' Dublin';
+      }
+      setInterval(updateDublinClock, 1000);
+      updateDublinClock();
+
+      // Toast Helper
+      function showToast(message, type = 'normal') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+      <span>${type === 'success' ? '✓' : (type === 'error' ? '✕' : 'ℹ')}</span>
+      <span>${message}</span>
+    `;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(10px)';
+          setTimeout(() => toast.remove(), 250);
+        }, 3500);
+      }
+
+      // Update connection indicator badge
+      function updateConnectionBadge() {
+        const isConn = BrowniesAPI.isConnected();
+        const dot = document.getElementById('header-status-dot');
+        const text = document.getElementById('header-status-text');
+        if (dot && text) {
+          if (isConn) {
+            dot.className = 'status-dot connected';
+            text.textContent = 'Google Sheets Connected';
+          } else {
+            dot.className = 'status-dot local';
+            text.textContent = 'Local Mode (Click to setup Sheets)';
+          }
+        }
+      }
+
+      // Load orders from API
+      async function loadOrders() {
+        btnSync.classList.add('loading');
+        btnSync.style.opacity = '0.7';
+
+        try {
+          const res = await BrowniesAPI.getOrders();
+          allOrders = res.orders || [];
+          renderDashboard();
+          updateConnectionBadge();
+        } catch (err) {
+          console.error(err);
+          showToast('Error loading orders: ' + err.message, 'error');
+        } finally {
+          btnSync.classList.remove('loading');
+          btnSync.style.opacity = '1';
+        }
+      }
+
+      // Calculate KPIs
+      function updateKPIs(orders) {
+        const total = orders.length;
+        const pending = orders.filter(o => o.status === 'New').length;
+        const baking = orders.filter(o => o.status === 'Baking').length;
+        const ready = orders.filter(o => o.status === 'Ready').length;
+        const revenue = orders
+          .filter(o => o.status !== 'Cancelled')
+          .reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+
+        kpiTotal.textContent = total;
+        kpiPending.textContent = pending;
+        kpiBaking.textContent = baking;
+        kpiReady.textContent = ready;
+        kpiRevenue.textContent = `€${revenue}`;
+      }
+
+      // Filter orders
+      function getFilteredOrders() {
+        return allOrders.filter(o => {
+          // Status filter
+          if (currentFilter !== 'all' && o.status !== currentFilter) {
+            return false;
+          }
+          // Search query
+          if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            const idMatch = (o.id || '').toLowerCase().includes(q);
+            const nameMatch = (o.name || '').toLowerCase().includes(q);
+            const igMatch = (o.instagram || '').toLowerCase().includes(q);
+            const toppingsMatch = Array.isArray(o.toppings) && o.toppings.some(t => t.toLowerCase().includes(q));
+            if (!idMatch && !nameMatch && !igMatch && !toppingsMatch) {
+              return false;
+            }
+          }
+          return true;
+        });
+      }
+
+      // Render Kanban view
+      function renderKanban(filteredOrders) {
+        const statuses = ['New', 'Confirmed', 'Baking', 'Ready', 'Fulfilled'];
+
+        statuses.forEach(status => {
+          const colEl = document.getElementById(`cards-${status}`);
+          const countEl = document.getElementById(`count-${status}`);
+          if (!colEl) return;
+
+          const colOrders = filteredOrders.filter(o => o.status === status);
+          if (countEl) countEl.textContent = colOrders.length;
+
+          if (colOrders.length === 0) {
+            colEl.innerHTML = `
+          <div class="column-empty">
+            No orders in this stage
+          </div>
+        `;
+            return;
+          }
+
+          colEl.innerHTML = colOrders.map(order => {
+            const timeAgo = formatTimeAgo(order.createdAt);
+            const toppings = Array.isArray(order.toppings) ? order.toppings : [];
+            const isDelivery = order.fulfilment && order.fulfilment.toLowerCase().includes('delivery');
+            const isPaid = order.paymentStatus && order.paymentStatus.toLowerCase().includes('paid');
+
+            // Quick next status
+            let nextStatus = '';
+            if (status === 'New') nextStatus = 'Confirmed';
+            else if (status === 'Confirmed') nextStatus = 'Baking';
+            else if (status === 'Baking') nextStatus = 'Ready';
+            else if (status === 'Ready') nextStatus = 'Fulfilled';
+
+            return `
+          <div class="order-card" data-order-id="${order.id}">
+            <div class="card-top">
+              <span class="order-id-pill">#${order.id}</span>
+              <span class="order-time">${timeAgo}</span>
+            </div>
+
+            <div class="card-customer">
+              <span class="customer-name">${escapeHtml(order.name)}</span>
+              <a href="https://instagram.com/${escapeHtml((order.instagram || '').replace('@', ''))}" target="_blank" class="customer-ig" onclick="event.stopPropagation();">
+                ${escapeHtml(order.instagram)} ↗
+              </a>
+            </div>
+
+            <div class="card-box-info">
+              <span class="card-box-name">${escapeHtml(order.boxSize || 'Box')} × ${order.quantity || 1}</span>
+              <span class="card-box-date">${order.preferredDate || ''}</span>
+            </div>
+
+            ${toppings.length > 0 ? `
+              <div class="card-toppings-wrap">
+                ${toppings.map(t => `<span class="topping-chip">+ ${escapeHtml(t)}</span>`).join('')}
+              </div>
+            ` : ''}
+
+            <div class="card-footer">
+              <div class="card-badges">
+                <span class="badge ${isDelivery ? 'badge-delivery' : 'badge-collection'}">
+                  ${isDelivery ? 'Delivery' : 'Collection'}
+                </span>
+                <span class="badge ${isPaid ? 'badge-paid' : 'badge-unpaid'}">
+                  ${isPaid ? 'Paid' : 'Unpaid'}
+                </span>
+              </div>
+              <span class="card-total">€${order.total}</span>
+            </div>
+
+            ${nextStatus ? `
+              <div class="card-quick-actions" onclick="event.stopPropagation();">
+                <button type="button" class="quick-move-btn" data-action="quick-status" data-id="${order.id}" data-target="${nextStatus}">
+                  Move to ${nextStatus} →
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+          }).join('');
+        });
+      }
+
+      // Render Table view
+      function renderTable(filteredOrders) {
+        const tbody = document.getElementById('table-orders-body');
+        if (!tbody) return;
+
+        if (filteredOrders.length === 0) {
+          tbody.innerHTML = `
+        <tr>
+          <td colspan="11" style="text-align:center; padding:2rem; color:var(--ink-muted);">
+            No matching orders found.
+          </td>
+        </tr>
+      `;
+          return;
+        }
+
+        tbody.innerHTML = filteredOrders.map(order => {
+          const toppings = Array.isArray(order.toppings) ? order.toppings.join(', ') : '';
+          const isPaid = order.paymentStatus && order.paymentStatus.toLowerCase().includes('paid');
+
+          return `
+        <tr data-order-id="${order.id}" style="cursor:pointer;">
+          <td><span class="order-id-pill">#${order.id}</span></td>
+          <td><strong>${escapeHtml(order.name)}</strong></td>
+          <td>
+            <a href="https://instagram.com/${escapeHtml((order.instagram || '').replace('@', ''))}" target="_blank" class="table-link" onclick="event.stopPropagation();">
+              ${escapeHtml(order.instagram)}
+            </a>
+          </td>
+          <td>${escapeHtml(order.boxSize || 'Box')} (×${order.quantity})</td>
+          <td style="max-width:200px; font-size:0.75rem; color:var(--ink-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHtml(toppings)}">
+            ${escapeHtml(toppings || 'Classic Fudgy')}
+          </td>
+          <td>${order.preferredDate || 'Flexible'}</td>
+          <td>
+            <span class="badge ${order.fulfilment === 'Delivery' ? 'badge-delivery' : 'badge-collection'}">
+              ${order.fulfilment || 'Collection'}
+            </span>
+          </td>
+          <td style="font-weight:600;">€${order.total}</td>
+          <td>
+            <span class="badge ${isPaid ? 'badge-paid' : 'badge-unpaid'}">
+              ${isPaid ? '✓ Paid' : 'Unpaid'}
+            </span>
+          </td>
+          <td onclick="event.stopPropagation();">
+            <select class="status-select-inline" data-action="table-status-change" data-id="${order.id}">
+              <option value="New" ${order.status === 'New' ? 'selected' : ''}>New</option>
+              <option value="Confirmed" ${order.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+              <option value="Baking" ${order.status === 'Baking' ? 'selected' : ''}>Baking</option>
+              <option value="Ready" ${order.status === 'Ready' ? 'selected' : ''}>Ready</option>
+              <option value="Fulfilled" ${order.status === 'Fulfilled' ? 'selected' : ''}>Fulfilled</option>
+              <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+            </select>
+          </td>
+          <td onclick="event.stopPropagation();">
+            <button type="button" class="btn btn-secondary btn-sm" data-action="open-detail" data-id="${order.id}">
+              Details
+            </button>
+          </td>
+        </tr>
+      `;
+        }).join('');
+      }
+
+      // Main render dispatcher
+      function renderDashboard() {
+        updateKPIs(allOrders);
+        const filtered = getFilteredOrders();
+        renderKanban(filtered);
+        renderTable(filtered);
+      }
+
+      // Open Order Detail Drawer
+      function openOrderDetail(orderId) {
+        const order = allOrders.find(o => o.id === orderId);
+        if (!order) return;
+        activeOrder = order;
+
+        document.getElementById('drawer-order-id').textContent = `#${order.id}`;
+        document.getElementById('drawer-badge-status').textContent = order.status;
+        document.getElementById('drawer-cust-name').textContent = order.name || 'Anonymous';
+
+        const igEl = document.getElementById('drawer-cust-ig');
+        igEl.textContent = order.instagram || '@unspecified';
+        igEl.href = `https://instagram.com/${(order.instagram || '').replace('@', '')}`;
+
+        document.getElementById('drawer-cust-phone').textContent = order.phone || 'None provided';
+        document.getElementById('drawer-order-date').textContent = order.preferredDate || 'Flexible / TBD';
+        document.getElementById('drawer-order-fulfil').textContent = order.fulfilment || 'Collection';
+
+        document.getElementById('drawer-box-type').textContent = order.boxSize || 'Box of 6';
+        document.getElementById('drawer-box-qty').textContent = `${order.quantity || 1} Box(es)`;
+
+        const toppings = Array.isArray(order.toppings) && order.toppings.length > 0 ? order.toppings.join(', ') : 'None (Classic Fudgy)';
+        document.getElementById('drawer-box-toppings').textContent = toppings;
+        document.getElementById('drawer-total-price').textContent = `€${order.total}`;
+        document.getElementById('drawer-order-notes').textContent = order.notes || 'No customer notes.';
+
+        document.getElementById('drawer-status-select').value = order.status || 'New';
+        document.getElementById('drawer-payment-select').value = order.paymentStatus || 'Unpaid';
+
+        orderDrawer.classList.add('active');
+        drawerOverlay.classList.add('active');
+      }
+
+      function closeOrderDetail() {
+        orderDrawer.classList.remove('active');
+        drawerOverlay.classList.remove('active');
+        activeOrder = null;
+      }
+
+      // Copy template text helpers
+      function copyTextToClipboard(text, successMsg) {
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(() => showToast(successMsg, 'success'));
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          showToast(successMsg, 'success');
+        }
+      }
+
+      // Format relative time helper
+      function formatTimeAgo(isoString) {
+        if (!isoString) return 'recently';
+        const diff = Date.now() - new Date(isoString).getTime();
+        const mins = Math.floor(diff / 60000);
+        if (mins < 1) return 'just now';
+        if (mins < 60) return `${mins}m ago`;
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return `${hrs}h ago`;
+        const days = Math.floor(hrs / 24);
+        return `${days}d ago`;
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      // Print Kitchen Docket
+      function printKitchenDocket(order) {
+        const ticketArea = document.getElementById('print-ticket-area');
+        ticketArea.innerHTML = `
+      <div style="font-family: monospace; padding: 20px; border: 2px dashed #000; width: 320px; margin: 0 auto; line-height: 1.4;">
+        <h2 style="text-align: center; margin: 0 0 5px 0;">CL'S BROWNIES</h2>
+        <p style="text-align: center; margin: 0 0 10px 0; font-size: 11px;">DUBLIN FRESH BAKE DOCKET</p>
+        <hr style="border-top: 1px dashed #000;">
+        <p><strong>ORDER: #${order.id}</strong></p>
+        <p>Date: ${order.preferredDate || 'Today'}</p>
+        <p>Fulfilment: ${order.fulfilment || 'Collection'}</p>
+        <hr style="border-top: 1px dashed #000;">
+        <p><strong>CUSTOMER:</strong> ${order.name}</p>
+        <p>Instagram: ${order.instagram}</p>
+        ${order.phone ? `<p>Phone: ${order.phone}</p>` : ''}
+        <hr style="border-top: 1px dashed #000;">
+        <p><strong>ITEM:</strong> ${order.boxSize} (×${order.quantity})</p>
+        <p><strong>TOPPINGS:</strong></p>
+        <p style="padding-left: 10px;">${Array.isArray(order.toppings) && order.toppings.length ? order.toppings.join('<br>• ') : 'None (Classic Fudgy)'}</p>
+        <hr style="border-top: 1px dashed #000;">
+        <p><strong>TOTAL: €${order.total}</strong> (${order.paymentStatus})</p>
+        ${order.notes ? `<p><strong>NOTES / ALLERGENS:</strong><br>${order.notes}</p>` : ''}
+        <hr style="border-top: 1px dashed #000;">
+        <p style="text-align: center; font-size: 11px; margin-top: 10px;">Baked fresh with love in Dublin 🍫</p>
+      </div>
+    `;
+        ticketArea.style.display = 'block';
+        window.print();
+        ticketArea.style.display = 'none';
+      }
+
+      // Setup Event Handlers
+      function setupEvents() {
+        // Search input
+        searchInput.addEventListener('input', (e) => {
+          searchQuery = e.target.value.trim();
+          renderDashboard();
+        });
+
+        // Filter pills
+        filterPills.forEach(pill => {
+          pill.addEventListener('click', () => {
+            filterPills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            currentFilter = pill.dataset.filter;
+            renderDashboard();
+          });
+        });
+
+        // View toggle
+        viewKanbanBtn.addEventListener('click', () => {
+          viewKanbanBtn.classList.add('active');
+          viewTableBtn.classList.remove('active');
+          kanbanView.style.display = 'grid';
+          tableView.style.display = 'none';
+        });
+
+        viewTableBtn.addEventListener('click', () => {
+          viewTableBtn.classList.add('active');
+          viewKanbanBtn.classList.remove('active');
+          kanbanView.style.display = 'none';
+          tableView.style.display = 'block';
+        });
+
+        // Sync button
+        btnSync.addEventListener('click', loadOrders);
+
+        // Open Settings Modal
+        btnOpenSettings.addEventListener('click', () => {
+          inputSheetsUrl.value = BrowniesAPI.getSheetsUrl();
+          testConnStatus.textContent = '';
+          settingsModal.classList.add('active');
+        });
+
+        settingsClose.addEventListener('click', () => settingsModal.classList.remove('active'));
+        btnSettingsCancel.addEventListener('click', () => settingsModal.classList.remove('active'));
+
+        // Test Connection Button
+        btnTestConn.addEventListener('click', async () => {
+          const url = inputSheetsUrl.value.trim();
+          testConnStatus.textContent = 'Testing connection...';
+          testConnStatus.style.color = '';
+          const result = await BrowniesAPI.testConnection(url);
+          testConnStatus.textContent = result.message;
+          testConnStatus.style.color = result.success ? 'var(--ok)' : 'var(--danger)';
+        });
+
+        // Save Settings
+        btnSaveSettings.addEventListener('click', async () => {
+          const url = inputSheetsUrl.value.trim();
+          BrowniesAPI.setSheetsUrl(url);
+          settingsModal.classList.remove('active');
+          updateConnectionBadge();
+          showToast('Settings saved. Refreshing orders...', 'success');
+          await loadOrders();
+        });
+
+        // Copy Apps Script code button
+        btnCopyScript.addEventListener('click', async () => {
+          try {
+            const resp = await fetch('google-apps-script.js');
+            const code = await resp.text();
+            copyTextToClipboard(code, 'Copied google-apps-script.js to clipboard!');
+          } catch (e) {
+            showToast('Open google-apps-script.js in the folder to copy code', 'normal');
+          }
+        });
+
+        // Reset Demo Data
+        btnResetDemo.addEventListener('click', () => {
+          if (confirm('Reset orders to sample Dublin bakery data?')) {
+            BrowniesAPI.resetDemoData();
+            settingsModal.classList.remove('active');
+            loadOrders();
+            showToast('Restored sample demo orders', 'success');
+          }
+        });
+
+        // Export CSV
+        btnExportCsv.addEventListener('click', () => {
+          const ok = BrowniesAPI.exportToCSV();
+          if (ok) showToast('Exported orders CSV', 'success');
+        });
+
+        // New Order Modal
+        btnNewOrder.addEventListener('click', () => {
+          formNewOrder.reset();
+          document.getElementById('new-order-date').value = new Date().toISOString().split('T')[0];
+          newOrderModal.classList.add('active');
+        });
+
+        newOrderClose.addEventListener('click', () => newOrderModal.classList.remove('active'));
+        btnNewOrderCancel.addEventListener('click', () => newOrderModal.classList.remove('active'));
+
+        // Submit New Order Form
+        formNewOrder.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const selectedToppings = Array.from(document.querySelectorAll('input[name="new-top"]:checked')).map(cb => cb.value);
+          const boxSize = document.getElementById('new-box-size').value;
+          const qty = Number(document.getElementById('new-quantity').value) || 1;
+
+          // Base prices
+          let basePrice = 14;
+          if (boxSize.includes('4')) basePrice = 10;
+          if (boxSize.includes('12')) basePrice = 20;
+
+          const total = (basePrice + (selectedToppings.length * 1)) * qty;
+
+          const orderData = {
+            name: document.getElementById('new-cust-name').value.trim(),
+            instagram: document.getElementById('new-cust-ig').value.trim(),
+            phone: document.getElementById('new-cust-phone').value.trim(),
+            boxSize: boxSize,
+            quantity: qty,
+            toppings: selectedToppings,
+            total: total,
+            fulfilment: document.getElementById('new-fulfilment').value,
+            paymentStatus: document.getElementById('new-payment-status').value,
+            preferredDate: document.getElementById('new-order-date').value,
+            notes: document.getElementById('new-notes').value.trim()
+          };
+
+          const result = await BrowniesAPI.createOrder(orderData);
+          newOrderModal.classList.remove('active');
+          showToast(`Created order #${result.orderId}`, 'success');
+          loadOrders();
+        });
+
+        // Drawer Controls
+        drawerClose.addEventListener('click', closeOrderDetail);
+        drawerOverlay.addEventListener('click', closeOrderDetail);
+
+        // Status change in drawer
+        document.getElementById('drawer-status-select').addEventListener('change', async (e) => {
+          if (!activeOrder) return;
+          const newStatus = e.target.value;
+          await BrowniesAPI.updateOrder(activeOrder.id, { status: newStatus });
+          activeOrder.status = newStatus;
+          document.getElementById('drawer-badge-status').textContent = newStatus;
+          showToast(`Updated #${activeOrder.id} status to ${newStatus}`, 'success');
+          renderDashboard();
+        });
+
+        // Payment change in drawer
+        document.getElementById('drawer-payment-select').addEventListener('change', async (e) => {
+          if (!activeOrder) return;
+          const newPay = e.target.value;
+          await BrowniesAPI.updateOrder(activeOrder.id, { paymentStatus: newPay });
+          activeOrder.paymentStatus = newPay;
+          showToast(`Updated payment status to ${newPay}`, 'success');
+          renderDashboard();
+        });
+
+        // Template 1: Confirm & Revolut
+        document.getElementById('btn-copy-template-confirm').addEventListener('click', () => {
+          if (!activeOrder) return;
+          const msg = `Hi ${activeOrder.name}! 🎉 Thank you so much for your brownie request (#${activeOrder.id})!
+
+We're delighted to confirm we can bake your ${activeOrder.boxSize} for ${activeOrder.preferredDate || 'your requested date'}.
+
+• Total: €${activeOrder.total}
+• Fulfilment: ${activeOrder.fulfilment}
+
+To secure your bake, please transfer €${activeOrder.total} via Revolut to @cl.priv4 (or link). Once sent, your box will go straight into our bake schedule! 🍫`;
+          copyTextToClipboard(msg, 'Copied Confirmation DM template!');
+        });
+
+        // Template 2: Baking
+        document.getElementById('btn-copy-template-baking').addEventListener('click', () => {
+          if (!activeOrder) return;
+          const msg = `Hi ${activeOrder.name}! Just letting you know your ${activeOrder.boxSize} (#${activeOrder.id}) is in the oven right now smelling incredible! Will ping you as soon as it's cooled and packaged. 🥣🍫`;
+          copyTextToClipboard(msg, 'Copied Baking DM template!');
+        });
+
+        // Template 3: Ready
+        document.getElementById('btn-copy-template-ready').addEventListener('click', () => {
+          if (!activeOrder) return;
+          const msg = `Hi ${activeOrder.name}! 🎁 Your brownies (#${activeOrder.id}) are freshly boxed and ready for ${activeOrder.fulfilment.toLowerCase()}! Let us know when you're on your way!`;
+          copyTextToClipboard(msg, 'Copied Ready DM template!');
+        });
+
+        // Print Ticket
+        document.getElementById('btn-print-ticket').addEventListener('click', () => {
+          if (activeOrder) printKitchenDocket(activeOrder);
+        });
+
+        // Delete Order
+        document.getElementById('btn-delete-order').addEventListener('click', async () => {
+          if (!activeOrder) return;
+          if (confirm(`Are you sure you want to delete order #${activeOrder.id}?`)) {
+            await BrowniesAPI.deleteOrder(activeOrder.id);
+            showToast(`Deleted order #${activeOrder.id}`, 'normal');
+            closeOrderDetail();
+            loadOrders();
+          }
+        });
+
+        // Global Delegated click listener for Kanban and Table cards
+        document.addEventListener('click', async (e) => {
+          // Quick status move button on kanban card
+          const quickBtn = e.target.closest('[data-action="quick-status"]');
+          if (quickBtn) {
+            const orderId = quickBtn.dataset.id;
+            const targetStatus = quickBtn.dataset.target;
+            await BrowniesAPI.updateOrder(orderId, { status: targetStatus });
+            showToast(`Moved #${orderId} to ${targetStatus}`, 'success');
+            loadOrders();
+            return;
+          }
+
+          // Card click
+          const card = e.target.closest('.order-card');
+          if (card) {
+            openOrderDetail(card.dataset.orderId);
+            return;
+          }
+
+          // Table row click
+          const tr = e.target.closest('tr[data-order-id]');
+          if (tr && !e.target.closest('select') && !e.target.closest('a')) {
+            openOrderDetail(tr.dataset.orderId);
+            return;
+          }
+
+          // Table inline select
+          if (e.target.dataset.action === 'table-status-change') {
+            const orderId = e.target.dataset.id;
+            const newStatus = e.target.value;
+            await BrowniesAPI.updateOrder(orderId, { status: newStatus });
+            showToast(`Updated #${orderId} status to ${newStatus}`, 'success');
+            renderDashboard();
+            return;
+          }
+
+          // Table detail button
+          const detailBtn = e.target.closest('[data-action="open-detail"]');
+          if (detailBtn) {
+            openOrderDetail(detailBtn.dataset.id);
+            return;
+          }
+        });
+
+        // Listen for cross-tab or cross-window order events
+        window.addEventListener('storage', (e) => {
+          if (e.key === 'cls_brownies_orders_v1') {
+            loadOrders();
+          }
+        });
+
+        window.addEventListener('cls_orders_updated', () => {
+          loadOrders();
+        });
+      }
+
+      // Init
+      function init() {
+        setupEvents();
+        loadOrders();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+</body>
+
+</html>
